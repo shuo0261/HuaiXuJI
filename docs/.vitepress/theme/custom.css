@@ -1,0 +1,1688 @@
+@import './assets/maple-mono-nf-cn.css';
+
+/**
+ * Aurora 主题样式迁移（VitePress 版）
+ * ============================================================
+ * 来源：aurora-master/src/styles/（variables / mixin / transition / animation / code / base）
+ *       aurora-master/src/assets/font/fontello.scss
+ *       aurora-master/src/components/MarkDown/index.scss
+ *       aurora-master/src/components/Spinner/index.scss
+ * 迁移方式：
+ *   1. SCSS 变量全部转为 CSS 自定义属性（:root），并建立与 VitePress --vp- 变量体系的映射；
+ *   2. SCSS mixin（card / card-light / card-page / link / clip / scrollBar / cursor / pc-layout / sp-layout）
+ *      展开为等价的 CSS 规则 / 工具类；
+ *   3. HTML 标签、类名、DOM 嵌套结构与源码保持一致（红线要求）。
+ */
+
+/* ============================================================
+ * 1. SCSS 变量 → CSS 变量（variables.scss）
+ * ============================================================ */
+:root {
+  /* Colors */
+  --whitesmoke: #f5f5f5;
+  --black-light: #46524b;
+  /* 公共组件沿用原变量名；显示阶段统一为槐叶绿，避免逐页维护两套主题色。 */
+  --purple: #719b85;
+  --purple-dark: #6c8e7b;
+  --purple-dim: #52745f;
+  --purple-deep: #3e7057;
+  --heading-color: #344c40;
+  --text-muted: #69776e;
+  --card-radius: 12px;
+  --surface-border: rgba(94, 125, 104, 0.16);
+  --brown: #795548;
+
+  /* Text & Link */
+  --text-color: var(--black-light);
+  --link-color: var(--purple-deep);
+
+  /* Selection */
+  --selection-bg: var(--purple);
+  --selection-color: white;
+
+  /* Panel */
+  --panel-color: #5d3523;
+  --panel-bg-color: #fbf4f1;
+  --panel-theme-bg-from-color: #fbc2eb;
+  --panel-theme-bg-to-color: #a6c1ee;
+  --panel-theme-border: #ffe4d8;
+
+  /* Text Clip */
+  --text-clip-start: #fb618d;
+  --text-clip-center: #8dc00a;
+  --text-clip-end: var(--purple);
+
+  /* Background */
+  --bg-white: rgba(255, 255, 252, 0.64);
+  --bg-white-dim: rgba(255, 255, 252, 0.76);
+  --bg-white-deep: rgba(255, 255, 252, 0.88);
+  --bg-dark: rgba(71, 101, 80, 0.08);
+  --bg-dark-dim: rgba(0, 0, 0, 0.2);
+  --bg-dark-deep: rgba(0, 0, 0, 0.3);
+  --bg-aplayer: rgba(178, 143, 206, 0.65);
+  --bg-sp-color: #f3f6f1;
+
+  /* Sakura */
+  --sakura-color: #e87a90;
+  --sakura-color-light: #fedfe1;
+
+  /* Concat */
+  --concat-email-color: var(--purple-dark);
+  --concat-github-color: #c3ce5f;
+  --concat-telegram-color: #6fd4ff;
+  --concat-music-color: #f596aa;
+  --concat-rss-color: #ffba84;
+
+  /* Loading */
+  --loading-bg: #aaaaaa;
+  --loading-color-one: #faaacc;
+  --loading-color-two: #c8aacc;
+  --loading-color-three: #96aacc;
+  --loading-color-four: #acd0ff;
+  --loading-color-five: #88cfff;
+
+  /* Code */
+  --code-color-red: #fc625d;
+  --code-color-yello: #fdbc40;
+  --code-color-green: #35cd4b;
+
+  /* Typography */
+  /* 所有页面和代码区在展示阶段共用本地 NF CN；后备字体仅用于下载期间或极少数字库外字符。 */
+  --font-family-base: 'Maple Mono NF CN', 'Noto Sans Mono CJK SC', Consolas, 'Microsoft YaHei', monospace;
+  --font-weight-normal: 400;
+  --font-weight-bold: 700;
+  --font-size-base: 14px;
+  --font-size-icon: 24px;
+  --font-size-code: 13px; /* $font-size-base - 1px */
+  --font-size-normal: 15px; /* $font-size-base + 1px */
+  --font-size-small: 12px; /* $font-size-base - 2px */
+  --font-size-large: 16px; /* $font-size-base + 2px */
+  --font-size-smaller: 10px; /* $font-size-base - 4px */
+  --font-size-larger: 18px; /* $font-size-base + 4px */
+  --font-size-headings-base: 24px;
+  --font-size-headings-step: 2px;
+  --line-height-base: 1.6;
+  --line-height-block: 1.8;
+
+  /* Z-index */
+  --zindex-bottom: -1;
+  --zindex-1: 1;
+  --zindex-2: 10;
+  --zindex-3: 100;
+  --zindex-4: 1000;
+
+  /* Layout */
+  --page-desktop: 876px;
+
+  /* Padding */
+  --card-padding-small: 8px 10px;
+  --card-padding: 16px 18px;
+  --code-padding: 12px 14px;
+
+  /* Shadow */
+  --card-shadow: 0 8px 28px rgba(48, 75, 56, 0.07), 0 1px 4px rgba(48, 75, 56, 0.04);
+  --card-shadow-hover: 0 14px 32px rgba(48, 75, 56, 0.13);
+  --card-shadow-light: 0 4px 18px rgba(48, 75, 56, 0.06);
+  --card-shadow-light-hover: 0 8px 24px rgba(48, 75, 56, 0.1);
+  --block-shadow: #ccc 0px 10px 10px -10px inset, #ccc 0px -10px 10px -10px inset;
+
+  /* Image Assets */
+  --aplayer-bg: url('https://cdn.jsdelivr.net/gh/chanshiyucx/yoi/blog/reimu.png');
+  --backtop-bg: url('https://cdn.jsdelivr.net/gh/chanshiyucx/yoi/blog/back-top.png');
+
+  /* Transition */
+  --transition-base: all 0.3s ease 0s, transform 0.6s cubic-bezier(0.6, 0.2, 0.1, 1) 0s;
+
+  /* About */
+  --avatar-size-pc: 100px;
+  --avatar-size-sp: 80px;
+  --contact-size-pc: 54px;
+  --contact-size-sp: 48px;
+
+  /* ============================================================
+   * 2. 与 VitePress --vp- 变量体系映射
+   * ============================================================ */
+  --vp-c-text-1: var(--black-light);
+  --vp-c-text-2: var(--black-light);
+  --vp-c-text-3: var(--black-light);
+  --vp-c-brand: var(--purple-deep);
+  --vp-c-brand-1: var(--purple-deep);
+  --vp-c-brand-2: var(--purple-dim);
+  --vp-c-brand-3: var(--purple-dark);
+  --vp-c-bg: transparent;
+  --vp-c-bg-alt: transparent;
+  --vp-c-bg-soft: var(--bg-white-dim);
+  --vp-c-divider: var(--bg-dark);
+  --vp-c-border: var(--bg-dark-dim);
+  --vp-c-gutter: transparent;
+  --vp-font-family-base: var(--font-family-base);
+  --vp-font-family-mono: var(--font-family-base);
+  --vp-sidebar-bg-color: transparent;
+  --vp-nav-bg-color: transparent;
+  --vp-local-nav-bg-color: transparent;
+  --vp-code-color: var(--purple-deep);
+  --vp-code-block-bg: #20201d;
+  --vp-custom-block-info-bg: var(--bg-white-dim);
+  --vp-custom-block-tip-code-bg: var(--bg-dark);
+}
+
+/* ============================================================
+ * 3. Fontello 图标字体（assets/font/fontello.scss）
+ * ============================================================ */
+@font-face {
+  font-family: 'Fontello';
+  src: url('./assets/fontello.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
+
+[class^='icon-']:before,
+[class*=' icon-']:before {
+  font-family: 'Fontello';
+  font-style: normal;
+  font-weight: normal;
+  display: inline-block;
+  text-decoration: inherit;
+  width: 1em;
+  text-align: center;
+
+  /* For safety - reset parent styles, that can break glyph codes*/
+  font-variant: normal;
+  text-transform: none;
+
+  /* fix buttons height, for twitter bootstrap */
+  line-height: 1em;
+
+  /* Font smoothing. That was taken from TWBS */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-heart:before {
+  content: '\e800';
+}
+.icon-fire:before {
+  content: '\e801';
+}
+.icon-graduation-cap:before {
+  content: '\e802';
+}
+.icon-calendar:before {
+  content: '\e803';
+}
+.icon-t-shirt:before {
+  content: '\e804';
+}
+.icon-emo-devil:before {
+  content: '\e805';
+}
+.icon-tag:before {
+  content: '\e806';
+}
+.icon-shop:before {
+  content: '\e807';
+}
+.icon-gift:before {
+  content: '\e808';
+}
+.icon-link:before {
+  content: '\e809';
+}
+.icon-comment:before {
+  content: '\e80a';
+}
+.icon-star:before {
+  content: '\e80b';
+}
+.icon-pencil:before {
+  content: '\e80c';
+}
+.icon-pilcrow:before {
+  content: '\e80d';
+}
+.icon-inbox:before {
+  content: '\e80e';
+}
+.icon-universal-access:before {
+  content: '\e80f';
+}
+.icon-cancel-outline:before {
+  content: '\e810';
+}
+.icon-camera:before {
+  content: '\e811';
+}
+.icon-clipboard:before {
+  content: '\e812';
+}
+.icon-left-open-outline:before {
+  content: '\e813';
+}
+.icon-right-open-outline:before {
+  content: '\e814';
+}
+.icon-bookmark-empty:before {
+  content: '\f097';
+}
+.icon-quote-left:before {
+  content: '\f10d';
+}
+.icon-quote-right:before {
+  content: '\f10e';
+}
+.icon-pagelines:before {
+  content: '\f18c';
+}
+.icon-venus-double:before {
+  content: '\f226';
+}
+.icon-tripadvisor:before {
+  content: '\f262';
+}
+.icon-fort-awesome:before {
+  content: '\f286';
+}
+
+/* ============================================================
+ * 4. 全局基础样式（styles/base.scss）
+ * ============================================================ */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+::selection {
+  background: var(--selection-bg);
+  color: var(--selection-color);
+}
+
+html {
+  font-family: var(--font-family-base);
+}
+
+body {
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-normal);
+  color: var(--text-color);
+  line-height: var(--line-height-base);
+  user-select: none;
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  cursor: url('./assets/cursor/cursor.png'), auto !important;
+}
+
+/* 浏览器表单控件通常自带字体，显式继承页面字体，避免按钮与输入文字回落到系统默认。 */
+button,
+input,
+select,
+textarea,
+optgroup {
+  font-family: inherit;
+}
+
+@media screen and (min-width: 768px) {
+  body {
+    /* 该属性值在移动设备上会造成比较明显的性能问题
+       详见 https://developer.mozilla.org/zh-CN/docs/Web/CSS/text-rendering */
+    text-rendering: optimizeLegibility;
+  }
+}
+
+/* mixin scrollBar 展开（应用于 body） */
+body::-webkit-scrollbar-track-piece {
+  background-color: transparent;
+}
+body::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+  background-color: transparent;
+}
+body::-webkit-scrollbar-thumb {
+  border-radius: 3px;
+  background-color: var(--purple-dark);
+  background-image: -webkit-linear-gradient(
+    45deg,
+    var(--bg-white) 25%,
+    transparent 25%,
+    transparent 50%,
+    var(--bg-white) 50%,
+    var(--bg-white) 75%,
+    transparent 75%,
+    transparent
+  );
+}
+
+#app {
+  min-height: 100vh;
+  overflow-x: hidden;
+  /* Layout 将背景放在应用内部；建立层叠上下文，防止负层级背景落到整页背后。 */
+  isolation: isolate;
+}
+
+@media screen and (min-width: 768px) {
+  #app {
+    background-color: #f3f6f1;
+  }
+}
+@media screen and (max-width: 767px) {
+  #app {
+    background-color: var(--bg-sp-color);
+  }
+}
+
+img {
+  display: block;
+  margin: auto;
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+  outline: none;
+  word-wrap: break-word;
+}
+
+button {
+  outline: none;
+}
+
+a,
+button,
+.waifu,
+.cursor,
+.code-copy {
+  cursor: url('./assets/cursor/cursor_link.png'), auto !important;
+}
+
+input,
+textarea,
+button {
+  appearance: none;
+  border: none;
+  border-radius: 0;
+}
+
+#bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: #edf3ed;
+  /* 原 Aurora 中 #bg 位于 #app 之前的 body 直属节点；
+     VitePress 下作为 #app 首子节点渲染，需压回内容层之下 */
+  z-index: -1;
+}
+/* Layout 在各尺寸共用同一张背景；保留既有柔光层，确保风景图下的文字与玻璃卡片依旧可读。 */
+#bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 12% 5%, rgba(203, 224, 207, 0.45), transparent 55%),
+    linear-gradient(135deg, rgba(250, 249, 242, 0.76), rgba(240, 246, 241, 0.72));
+}
+/* 代码高亮 */
+pre {
+  padding: var(--code-padding);
+  line-height: 1.5;
+  box-shadow: var(--block-shadow);
+}
+pre > code {
+  display: block;
+  overflow: auto;
+}
+pre > code::-webkit-scrollbar-track-piece {
+  background-color: transparent;
+}
+pre > code::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+  background-color: transparent;
+}
+pre > code::-webkit-scrollbar-thumb {
+  border-radius: 3px;
+  background-color: var(--purple-dark);
+  background-image: -webkit-linear-gradient(
+    45deg,
+    var(--bg-white) 25%,
+    transparent 25%,
+    transparent 50%,
+    var(--bg-white) 50%,
+    var(--bg-white) 75%,
+    transparent 75%,
+    transparent
+  );
+}
+
+code {
+  width: 100%;
+  font-family: var(--vp-font-family-mono);
+  font-size: var(--font-weight-normal);
+  text-shadow: 0 0 1px var(--bg-dark-deep);
+  text-align: left;
+  white-space: pre;
+  letter-spacing: 0;
+  word-spacing: normal;
+  word-break: normal;
+  word-wrap: normal;
+  line-height: 1.5;
+  tab-size: 4;
+  hyphens: none;
+}
+
+td.hljs-ln-numbers {
+  padding-right: 16px;
+  text-align: center;
+}
+
+/* Gitalk 样式保留（评论暂未实现，样式随源码迁移） */
+.markdown-body code {
+  color: var(--purple);
+  font-weight: 700;
+}
+
+/* ============================================================
+ * 5. Mixin 展开为工具类（styles/mixin.scss）
+ * ============================================================ */
+
+/* @mixin card */
+.aurora-card {
+  border-radius: 3px;
+  background-color: var(--bg-white-deep);
+}
+@media screen and (min-width: 768px) {
+  .aurora-card {
+    box-shadow: var(--card-shadow);
+  }
+}
+@media screen and (max-width: 767px) {
+  .aurora-card {
+    box-shadow: var(--card-shadow-light);
+  }
+}
+
+/* @mixin card-light */
+.aurora-card-light {
+  border-radius: 3px;
+  background-color: var(--bg-white-dim);
+  box-shadow: var(--card-shadow-light);
+  transition: var(--transition-base);
+}
+@media screen and (min-width: 768px) {
+  .aurora-card-light:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--card-shadow-light-hover);
+  }
+}
+
+/* @mixin card-page */
+.aurora-card-page {
+  border-radius: 3px;
+}
+@media screen and (min-width: 768px) {
+  .aurora-card-page {
+    background-color: var(--bg-white-dim);
+    box-shadow: var(--card-shadow);
+  }
+}
+
+/* @mixin link —— 以工具类形式提供，组件内通过 class="aurora-link" 使用 */
+.aurora-link {
+  position: relative;
+  color: var(--link-color);
+}
+.aurora-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 1.5px;
+  background-color: var(--link-color);
+  transform: scaleX(0);
+  transform-origin: bottom right;
+  transition: transform 0.3s ease-out;
+}
+.aurora-link:hover::after {
+  transform-origin: bottom left;
+  transform: scaleX(1);
+}
+.aurora-link:hover::before {
+  opacity: 1;
+  transform: scale(1) translateY(-100%);
+}
+.aurora-link:before {
+  content: '\e809  ' attr(href);
+  position: absolute;
+  padding: 0px 4px;
+  width: max-content;
+  pointer-events: none;
+  /* 链接提示同时含图标和网址：图标保留 Fontello，网址由统一正文体接续。 */
+  font-family: 'Fontello', var(--font-family-base);
+  font-size: var(--font-size-small);
+  box-shadow: var(--card-shadow-light);
+  border-radius: 3px;
+  background-color: white;
+  opacity: 0;
+  transform: scale(0.7) translateY(-75%);
+  transform-origin: left center;
+  transition: all 0.3s ease 0s;
+}
+
+/* @mixin clip —— 工具类形式提供 */
+.aurora-clip {
+  color: white;
+  text-transform: capitalize;
+  background-image: linear-gradient(
+    to right,
+    var(--text-clip-start) 10%,
+    var(--text-clip-center) 40%,
+    var(--text-clip-end) 70%
+  );
+  background-size: auto auto;
+  background-clip: border-box;
+  background-size: 200% auto;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  -webkit-background-clip: text;
+  animation: textclip 3s linear infinite;
+}
+
+/* ============================================================
+ * 6. 页面过渡（styles/transition.scss）
+ * ============================================================ */
+/* fade-transform（transition 收窄到 opacity/transform：
+   all 会监听背景图等重属性的变化，导致 leave 过渡收尾延迟） */
+.fade-transform-leave-active,
+.fade-transform-enter-active {
+  transition: opacity 0.5s, transform 0.5s;
+}
+.fade-transform-enter-from {
+  opacity: 0;
+}
+.fade-transform-leave-to {
+  opacity: 0;
+}
+@media screen and (min-width: 768px) {
+  .fade-transform-enter-from {
+    transform: translateY(-30px);
+  }
+  .fade-transform-leave-to {
+    transform: translateY(30px);
+  }
+}
+@media screen and (max-width: 767px) {
+  .fade-transform-enter-from {
+    transform: translateY(-20px);
+  }
+  .fade-transform-leave-to {
+    transform: translateY(20px);
+  }
+}
+
+/* header-transform */
+.header-transform-leave-active,
+.header-transform-enter-active {
+  transition: all 0.5s;
+}
+.header-transform-enter-from {
+  opacity: 0;
+}
+.header-transform-leave-to {
+  opacity: 0;
+}
+@media screen and (min-width: 768px) {
+  .header-transform-enter-from,
+  .header-transform-leave-to {
+    transform: translateY(-30px);
+  }
+}
+@media screen and (max-width: 767px) {
+  .header-transform-enter-from,
+  .header-transform-leave-to {
+    transform: translateY(-20px);
+  }
+}
+
+/* ============================================================
+ * 7. 关键帧动画（styles/animation.scss）
+ * ============================================================ */
+/* FadeInDown */
+@keyframes fadeInDown {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0%);
+  }
+}
+
+/* FadeInDown SP */
+@keyframes fadeInDownSP {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(-10px);
+  }
+}
+
+/* FadeIn */
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.86);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ZoomIn */
+@keyframes zoomIn {
+  0% {
+    opacity: 0;
+    transform: scale(0);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* float */
+@keyframes float {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+/* rotate */
+@keyframes rotate {
+  0% {
+    transform: rotate(0);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* 封面图动画 */
+@keyframes coverIn {
+  0% {
+    opacity: 0.6;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* 文字跑马灯 */
+@keyframes textclip {
+  100% {
+    background-position: 200% center;
+  }
+}
+
+/* 面板下落动画 */
+@keyframes dropDown {
+  0% {
+    transform: translateY(-100vh);
+  }
+  15% {
+    transform: translateY(0vh);
+  }
+  30% {
+    transform: translateY(-3vh);
+  }
+  45% {
+    transform: translateY(0vh);
+  }
+  60% {
+    transform: translateY(-1.5vh);
+  }
+  75% {
+    transform: translateY(0vh);
+  }
+  90% {
+    transform: translateY(-0.75vh);
+  }
+  100% {
+    transform: translateY(0vh);
+  }
+}
+
+/* 面板摇动动画 */
+@keyframes dropWave {
+  0% {
+    transform: rotateY(45deg);
+  }
+  15% {
+    transform: rotateY(-5deg);
+  }
+  30% {
+    transform: rotateY(5deg);
+  }
+  45% {
+    transform: rotateY(-2.5deg);
+  }
+  60% {
+    transform: rotateY(2.5deg);
+  }
+  75% {
+    transform: rotateY(-1.25deg);
+  }
+  90% {
+    transform: rotateY(1.25deg);
+  }
+  100% {
+    transform: rotateY(0deg);
+  }
+}
+
+/* 图片Loading */
+@keyframes slide {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.3;
+    transform: scale(2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Shake（看板娘提示气泡） */
+@keyframes shake {
+  2% {
+    transform: translate(0.5px, -1.5px) rotate(-0.5deg);
+  }
+  4% {
+    transform: translate(0.5px, 1.5px) rotate(1.5deg);
+  }
+  6% {
+    transform: translate(1.5px, 1.5px) rotate(1.5deg);
+  }
+  8% {
+    transform: translate(2.5px, 1.5px) rotate(0.5deg);
+  }
+  10% {
+    transform: translate(0.5px, 2.5px) rotate(0.5deg);
+  }
+  12% {
+    transform: translate(1.5px, 1.5px) rotate(0.5deg);
+  }
+  14% {
+    transform: translate(0.5px, 0.5px) rotate(0.5deg);
+  }
+  16% {
+    transform: translate(-1.5px, -0.5px) rotate(1.5deg);
+  }
+  18% {
+    transform: translate(0.5px, 0.5px) rotate(1.5deg);
+  }
+  20% {
+    transform: translate(2.5px, 2.5px) rotate(1.5deg);
+  }
+  22% {
+    transform: translate(0.5px, -1.5px) rotate(1.5deg);
+  }
+  24% {
+    transform: translate(-1.5px, 1.5px) rotate(-0.5deg);
+  }
+  26% {
+    transform: translate(1.5px, 0.5px) rotate(1.5deg);
+  }
+  28% {
+    transform: translate(-0.5px, -0.5px) rotate(-0.5deg);
+  }
+  30% {
+    transform: translate(1.5px, -0.5px) rotate(-0.5deg);
+  }
+  32% {
+    transform: translate(2.5px, -1.5px) rotate(1.5deg);
+  }
+  34% {
+    transform: translate(2.5px, 2.5px) rotate(-0.5deg);
+  }
+  36% {
+    transform: translate(0.5px, -1.5px) rotate(0.5deg);
+  }
+  38% {
+    transform: translate(2.5px, -0.5px) rotate(-0.5deg);
+  }
+  40% {
+    transform: translate(-0.5px, 2.5px) rotate(0.5deg);
+  }
+  42% {
+    transform: translate(-1.5px, 2.5px) rotate(0.5deg);
+  }
+  44% {
+    transform: translate(-1.5px, 1.5px) rotate(0.5deg);
+  }
+  46% {
+    transform: translate(1.5px, -0.5px) rotate(-0.5deg);
+  }
+  48% {
+    transform: translate(2.5px, -0.5px) rotate(0.5deg);
+  }
+  50% {
+    transform: translate(-1.5px, 1.5px) rotate(0.5deg);
+  }
+  52% {
+    transform: translate(-0.5px, 1.5px) rotate(0.5deg);
+  }
+  54% {
+    transform: translate(-1.5px, 1.5px) rotate(0.5deg);
+  }
+  56% {
+    transform: translate(0.5px, 2.5px) rotate(1.5deg);
+  }
+  58% {
+    transform: translate(2.5px, 2.5px) rotate(0.5deg);
+  }
+  60% {
+    transform: translate(2.5px, -1.5px) rotate(1.5deg);
+  }
+  62% {
+    transform: translate(-1.5px, 0.5px) rotate(1.5deg);
+  }
+  64% {
+    transform: translate(-1.5px, 1.5px) rotate(1.5deg);
+  }
+  66% {
+    transform: translate(0.5px, 2.5px) rotate(1.5deg);
+  }
+  68% {
+    transform: translate(2.5px, -1.5px) rotate(1.5deg);
+  }
+  70% {
+    transform: translate(2.5px, 2.5px) rotate(0.5deg);
+  }
+  72% {
+    transform: translate(-0.5px, -1.5px) rotate(1.5deg);
+  }
+  74% {
+    transform: translate(-1.5px, 2.5px) rotate(1.5deg);
+  }
+  76% {
+    transform: translate(-1.5px, 2.5px) rotate(0.5deg);
+  }
+  78% {
+    transform: translate(-1.5px, 2.5px) rotate(0.5deg);
+  }
+  80% {
+    transform: translate(-1.5px, 0.5px) rotate(-0.5deg);
+  }
+  82% {
+    transform: translate(-1.5px, 0.5px) rotate(-0.5deg);
+  }
+  84% {
+    transform: translate(-0.5px, 0.5px) rotate(1.5deg);
+  }
+  86% {
+    transform: translate(2.5px, 1.5px) rotate(0.5deg);
+  }
+  88% {
+    transform: translate(-1.5px, 0.5px) rotate(1.5deg);
+  }
+  90% {
+    transform: translate(-1.5px, -0.5px) rotate(-0.5deg);
+  }
+  92% {
+    transform: translate(-1.5px, -1.5px) rotate(1.5deg);
+  }
+  94% {
+    transform: translate(0.5px, 0.5px) rotate(-0.5deg);
+  }
+  96% {
+    transform: translate(2.5px, -0.5px) rotate(-0.5deg);
+  }
+  98% {
+    transform: translate(-1.5px, -1.5px) rotate(-0.5deg);
+  }
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0);
+  }
+}
+
+/* ============================================================
+ * 8. 代码高亮主题（styles/code.scss）
+ * ============================================================ */
+/* Base16 Atelier Dune Dark - Theme */
+/* by Bram de Haan (http://atelierbram.github.io/syntax-highlighting/atelier-schemes/dune) */
+/* Original Base16 color scheme by Chris Kempson (https://github.com/chriskempson/base16) */
+
+/* Atelier-Dune Comment */
+.hljs-comment,
+.hljs-quote {
+  color: #999580;
+}
+
+/* Atelier-Dune Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-attribute,
+.hljs-tag,
+.hljs-name,
+.hljs-regexp,
+.hljs-link,
+.hljs-selector-id,
+.hljs-selector-class {
+  color: #d73737;
+}
+
+/* Atelier-Dune Orange */
+.hljs-number,
+.hljs-meta,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params {
+  color: #cd5da0;
+}
+
+/* Atelier-Dune Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet {
+  color: #60ac39;
+}
+
+/* Atelier-Dune Blue */
+.hljs-title,
+.hljs-section {
+  color: #6684e1;
+}
+
+/* Atelier-Dune Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+  color: var(--purple-deep);
+}
+
+.hljs {
+  display: block;
+  overflow-x: auto;
+  background: #20201d;
+  color: #a6a28c;
+  padding: 0.5em;
+}
+
+.hljs-emphasis {
+  font-style: italic;
+}
+
+.hljs-strong {
+  font-weight: bold;
+}
+
+/* ============================================================
+ * 9. Markdown 内容样式（components/MarkDown/index.scss）
+ * ============================================================ */
+.markdown {
+  text-align: justify;
+  font-size: var(--font-size-normal);
+  line-height: var(--line-height-block);
+}
+.markdown .loading {
+  position: relative;
+  width: 100%;
+  margin: 0 auto;
+  text-align: center;
+  transform: translateY(50%);
+}
+.markdown .loading .dot {
+  display: inline-block;
+  margin: 5px;
+  width: 10px;
+  height: 10px;
+  border-radius: 100%;
+  background-color: var(--loading-bg);
+  animation: slide 1s infinite;
+}
+.markdown .loading .dot:nth-child(1) {
+  animation-delay: 0.1s;
+  background-color: var(--loading-color-one);
+}
+.markdown .loading .dot:nth-child(2) {
+  animation-delay: 0.2s;
+  background-color: var(--loading-color-two);
+}
+.markdown .loading .dot:nth-child(3) {
+  animation-delay: 0.3s;
+  background-color: var(--loading-color-three);
+}
+.markdown .loading .dot:nth-child(4) {
+  animation-delay: 0.4s;
+  background-color: var(--loading-color-four);
+}
+.markdown .loading .dot:nth-child(5) {
+  animation-delay: 0.5s;
+  background-color: var(--loading-color-five);
+}
+
+.markdown h1,
+.markdown h2,
+.markdown h3,
+.markdown h4,
+.markdown h5,
+.markdown h6 {
+  margin: 20px 16px 15px;
+  transition: color 0.3s ease;
+  font-weight: bold;
+  line-height: 1.5;
+}
+.markdown h1 i,
+.markdown h2 i,
+.markdown h3 i,
+.markdown h4 i,
+.markdown h5 i,
+.markdown h6 i {
+  padding-right: 6px;
+}
+.markdown h1 .icon-gift::before,
+.markdown h1 .icon-pagelines::before,
+.markdown h2 .icon-gift::before,
+.markdown h2 .icon-pagelines::before,
+.markdown h3 .icon-gift::before,
+.markdown h3 .icon-pagelines::before,
+.markdown h4 .icon-gift::before,
+.markdown h4 .icon-pagelines::before,
+.markdown h5 .icon-gift::before,
+.markdown h5 .icon-pagelines::before,
+.markdown h6 .icon-gift::before,
+.markdown h6 .icon-pagelines::before {
+  transform: translateY(-2px);
+}
+.markdown h1:hover,
+.markdown h2:hover,
+.markdown h3:hover,
+.markdown h4:hover,
+.markdown h5:hover,
+.markdown h6:hover {
+  color: var(--purple-deep);
+}
+
+.markdown h1 + h2,
+.markdown h2 + h3,
+.markdown h3 + h4,
+.markdown h4 + h5,
+.markdown h5 + h6 {
+  margin-top: 0;
+  padding-top: 0;
+}
+
+/* SCSS @for 展开标题字号 */
+@media screen and (min-width: 768px) {
+  .markdown h1 {
+    font-size: 22px;
+  }
+  .markdown h2 {
+    font-size: 20px;
+  }
+  .markdown h3 {
+    font-size: 18px;
+  }
+  .markdown h4 {
+    font-size: 16px;
+  }
+  .markdown h5 {
+    font-size: 14px;
+  }
+  .markdown h6 {
+    font-size: 12px;
+  }
+}
+@media screen and (max-width: 767px) {
+  .markdown h1 {
+    font-size: 18px;
+  }
+  .markdown h2 {
+    font-size: 16px;
+  }
+  .markdown h3 {
+    font-size: 14px;
+  }
+  .markdown h4 {
+    font-size: 12px;
+  }
+  .markdown h5 {
+    font-size: 10px;
+  }
+  .markdown h6 {
+    font-size: 8px;
+  }
+}
+
+.markdown p {
+  margin: 0 16px 25px;
+  word-break: break-all;
+}
+.markdown p:last-child {
+  margin-bottom: 0;
+}
+
+.markdown pre,
+.markdown blockquote {
+  margin-bottom: 25px;
+}
+
+.markdown pre {
+  position: relative;
+  padding: 36px 0 0;
+}
+.markdown pre::before {
+  content: ' ';
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  height: 12px;
+  width: 12px;
+  background: var(--code-color-red);
+  border-radius: 50%;
+  box-shadow: 20px 0 var(--code-color-yello), 40px 0 var(--code-color-green);
+}
+.markdown pre:hover .code-copy {
+  opacity: 1;
+}
+.markdown pre code {
+  padding-bottom: 10px;
+  padding-left: 12px;
+}
+.markdown pre .code-copy {
+  opacity: 0;
+  position: absolute;
+  top: 4px;
+  right: 0;
+  height: 36px;
+  width: 36px;
+  font-size: var(--font-size-large);
+  line-height: 32px;
+  text-align: center;
+  color: #888;
+  transition: all ease 0.3s;
+}
+.markdown pre .code-copy:hover {
+  color: var(--purple);
+  transform: translateY(-3px);
+}
+
+.markdown ol {
+  margin: 25px 16px 25px 62px;
+}
+.markdown ul {
+  margin: 25px 16px 25px 52px;
+}
+.markdown ol li p,
+.markdown ul li p {
+  margin-left: 0;
+}
+.markdown ol li ol {
+  margin-left: 44px;
+}
+.markdown ol li ul,
+.markdown ul li ul {
+  margin-left: 34px;
+}
+
+.markdown p code,
+.markdown ol code,
+.markdown ul code {
+  padding: 2px 4px;
+  color: var(--purple-deep);
+  font-size: var(--font-size-code);
+  word-wrap: break-word;
+  border-radius: 3px;
+  background-color: var(--bg-dark);
+}
+
+.markdown strong {
+  font-weight: var(--font-weight-bold);
+}
+
+.markdown a {
+  position: relative;
+  color: var(--link-color);
+}
+.markdown a::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 1.5px;
+  background-color: var(--link-color);
+  transform: scaleX(0);
+  transform-origin: bottom right;
+  transition: transform 0.3s ease-out;
+}
+.markdown a:hover::after {
+  transform-origin: bottom left;
+  transform: scaleX(1);
+}
+.markdown a:hover::before {
+  opacity: 1;
+  transform: scale(1) translateY(-100%);
+}
+.markdown a:before {
+  content: '\e809  ' attr(href);
+  position: absolute;
+  padding: 0px 4px;
+  width: max-content;
+  pointer-events: none;
+  /* 链接提示同时含图标和网址：图标保留 Fontello，网址由统一正文体接续。 */
+  font-family: 'Fontello', var(--font-family-base);
+  font-size: var(--font-size-small);
+  box-shadow: var(--card-shadow-light);
+  border-radius: 3px;
+  background-color: white;
+  opacity: 0;
+  transform: scale(0.7) translateY(-75%);
+  transform-origin: left center;
+  transition: all 0.3s ease 0s;
+}
+
+.markdown blockquote {
+  position: relative;
+  padding: 36px 0;
+  font-style: italic;
+  box-shadow: var(--block-shadow);
+}
+.markdown blockquote > p {
+  margin: 10px 46px;
+}
+.markdown blockquote::before,
+.markdown blockquote::after {
+  position: absolute;
+  font-family: Fontello;
+  font-style: normal;
+  font-weight: var(--font-weight-normal);
+  font-size: var(--font-size-icon);
+  text-decoration: inherit;
+}
+.markdown blockquote::before {
+  content: '\f10d';
+  top: 6px;
+  left: 16px;
+}
+.markdown blockquote::after {
+  content: '\f10e';
+  bottom: 6px;
+  right: 16px;
+}
+
+.markdown img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+  border-radius: 8px;
+}
+
+.markdown span[class*='img-box'] {
+  position: relative;
+  display: block;
+  margin: 0 auto 25px;
+  text-align: center;
+  border-radius: 3px;
+}
+.markdown span[class*='img-box'].full {
+  margin: 0 -16px;
+}
+.markdown span[class*='img-box'].full .bg,
+.markdown span[class*='img-box'].full img {
+  border-radius: unset;
+}
+.markdown span[class*='img-box'] .bg {
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  max-width: 100%;
+  border-radius: 3px;
+  background-color: var(--bg-dark);
+  transform: translateX(-50%);
+}
+.markdown span[class*='img-box'] img {
+  position: relative;
+  margin: 0 auto;
+  max-width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: var(--card-shadow);
+  transition: all 0.3s ease-out;
+}
+.markdown span[class*='img-box'] .title {
+  display: block;
+  padding-top: 8px;
+  font-style: italic;
+}
+
+.markdown .table-wrapper {
+  margin: 0 16px 25px;
+  max-width: 100%;
+  overflow-x: auto;
+}
+.markdown .table-wrapper::-webkit-scrollbar-track-piece {
+  background-color: transparent;
+}
+.markdown .table-wrapper::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+  background-color: transparent;
+}
+.markdown .table-wrapper::-webkit-scrollbar-thumb {
+  border-radius: 3px;
+  background-color: var(--purple-dark);
+  background-image: -webkit-linear-gradient(
+    45deg,
+    var(--bg-white) 25%,
+    transparent 25%,
+    transparent 50%,
+    var(--bg-white) 50%,
+    var(--bg-white) 75%,
+    transparent 75%,
+    transparent
+  );
+}
+.markdown .table-wrapper > table {
+  margin: 0 auto;
+  border-radius: 3px;
+  border-spacing: 2px;
+  border-collapse: separate;
+  border: 1px solid #dfdfdf;
+}
+.markdown .table-wrapper > table tr {
+  height: 32px;
+}
+.markdown .table-wrapper > table th {
+  background-color: var(--bg-dark);
+}
+.markdown .table-wrapper > table td,
+.markdown .table-wrapper > table th {
+  padding: 0 36px;
+  border: 1px solid #dfdfdf;
+}
+
+/* ============================================================
+ * 10. Spinner（components/Spinner/index.scss）
+ * ============================================================ */
+.flower-spinner,
+.flower-spinner * {
+  box-sizing: border-box;
+  transform: scale(0.6);
+}
+
+.flower-spinner {
+  height: 70px;
+  width: 70px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.flower-spinner .dots-container {
+  height: calc(70px / 7);
+  width: calc(70px / 7);
+}
+
+.flower-spinner .smaller-dot {
+  background-color: var(--purple-dim);
+  height: 100%;
+  width: 100%;
+  border-radius: 50%;
+  animation: flower-spinner-smaller-dot-animation 2.5s 0s infinite both;
+}
+
+.flower-spinner .bigger-dot {
+  background-color: var(--purple-dim);
+  height: 100%;
+  width: 100%;
+  padding: 10%;
+  border-radius: 50%;
+  animation: flower-spinner-bigger-dot-animation 2.5s 0s infinite both;
+}
+
+@keyframes flower-spinner-bigger-dot-animation {
+  0%,
+  100% {
+    box-shadow: var(--purple-dim) 0px 0px 0px, var(--purple-dim) 0px 0px 0px, var(--purple-dim) 0px 0px 0px,
+      var(--purple-dim) 0px 0px 0px, var(--purple-dim) 0px 0px 0px, var(--purple-dim) 0px 0px 0px,
+      var(--purple-dim) 0px 0px 0px, var(--purple-dim) 0px 0px 0px;
+  }
+  50% {
+    transform: rotate(180deg);
+  }
+  25%,
+  75% {
+    box-shadow: var(--purple-dim) 26px 0px 0px, var(--purple-dim) -26px 0px 0px, var(--purple-dim) 0px 26px 0px,
+      var(--purple-dim) 0px -26px 0px, var(--purple-dim) 19px -19px 0px, var(--purple-dim) 19px 19px 0px,
+      var(--purple-dim) -19px -19px 0px, var(--purple-dim) -19px 19px 0px;
+  }
+  100% {
+    transform: rotate(360deg);
+    box-shadow: var(--purple-dim) 0px 0px 0px, var(--purple-dim) 0px 0px 0px, var(--purple-dim) 0px 0px 0px,
+      var(--purple-dim) 0px 0px 0px, var(--purple-dim) 0px 0px 0px, var(--purple-dim) 0px 0px 0px,
+      var(--purple-dim) 0px 0px 0px, var(--purple-dim) 0px 0px 0px;
+  }
+}
+
+@keyframes flower-spinner-smaller-dot-animation {
+  0%,
+  100% {
+    box-shadow: var(--purple-dim) 0px 0px 0px, var(--purple-dim) 0px 0px 0px, var(--purple-dim) 0px 0px 0px,
+      var(--purple-dim) 0px 0px 0px, var(--purple-dim) 0px 0px 0px, var(--purple-dim) 0px 0px 0px,
+      var(--purple-dim) 0px 0px 0px, var(--purple-dim) 0px 0px 0px;
+  }
+  25%,
+  75% {
+    box-shadow: var(--purple-dim) 14px 0px 0px, var(--purple-dim) -14px 0px 0px, var(--purple-dim) 0px 14px 0px,
+      var(--purple-dim) 0px -14px 0px, var(--purple-dim) 10px -10px 0px, var(--purple-dim) 10px 10px 0px,
+      var(--purple-dim) -10px -10px 0px, var(--purple-dim) -10px 10px 0px;
+  }
+  100% {
+    box-shadow: var(--purple-dim) 0px 0px 0px, var(--purple-dim) 0px 0px 0px, var(--purple-dim) 0px 0px 0px,
+      var(--purple-dim) 0px 0px 0px, var(--purple-dim) 0px 0px 0px, var(--purple-dim) 0px 0px 0px,
+      var(--purple-dim) 0px 0px 0px, var(--purple-dim) 0px 0px 0px;
+  }
+}
+
+/* ============================================================
+ * 11. VitePress 默认主题清除
+ * （Aurora 完全接管页面渲染，隐藏默认主题的侧栏/导航等结构）
+ * ============================================================ */
+.VPNav,
+.VPSidebar,
+.VPBackDrop,
+.VPFooter,
+.VPPageAside,
+.VPDocFooter,
+.VPNavBar,
+.VPLocalNav,
+.VPDocNotFound {
+  display: none !important;
+}
+
+.VPContent,
+.VPPage,
+.VPDoc,
+.VPHome {
+  max-width: 100% !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.VPDoc .container,
+.VPDoc .container > .content,
+.VPContent .vp-page,
+main.vp-page {
+  max-width: 100% !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.VPDoc.has-sidebar .container,
+.VPDoc .container {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+/* ============================================================
+ * 12. 移动端导航栏贴合 header 背景图底部
+ * （header nav 悬浮偏高，header 的 padding-bottom: 30px 在导航条
+ *   下方留出一条背景图空隙；仅移动端生效，PC 端布局不变）
+ * ============================================================ */
+@media (max-width: 767px) {
+  header {
+    padding-bottom: 0;
+  }
+  header nav {
+    margin-top: 10px;
+  }
+}
+
+/* ============================================================
+ * 13. 导航栏当前路由激活态
+ * （原版仅在移动端有 .router-link-exact-active 紫色高亮；PC 端
+ *   应需求同步提供：颜色与 :hover 一致（--link-color）。特异性
+ *   header nav a.active 与 a:hover 同级，本文件在 Header.css 之后
+ *   加载，激活色稳定生效）
+ * ============================================================ */
+@media (min-width: 768px) {
+  header nav a.active,
+  header nav a.active:hover {
+    color: var(--link-color);
+  }
+}
+@media (max-width: 767px) {
+  header nav a.active {
+    color: var(--link-color);
+  }
+}
+
+/* 首页、文章与聚合页共用表面规则；保留各页结构和交互，仅在渲染阶段统一边界与层次。 */
+:is(#home article, #post article, #archive .page, #category .page, #tag .page, #friend .page, #about .page,
+  #app .archive ul li, #category .content li, #friend .content li) {
+  border: 1px solid var(--surface-border);
+  border-radius: var(--card-radius);
+}
+:is(#archive, #category, #tag, #friend, #about) .page {
+  background-color: var(--bg-white-dim);
+  box-shadow: var(--card-shadow);
+}
+#app .main {
+  /* 平板保留两栏时也预留页边距，避免 768px 处内容贴边。 */
+  width: calc(100% - 48px);
+}
+#app .archive ul li {
+  border-top-width: 2px;
+}
+#app .archive ul li h3 {
+  color: var(--heading-color);
+  overflow-wrap: anywhere;
+}
+#app .archive ul li .post-meta {
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  height: auto;
+  color: var(--text-muted);
+  font-size: var(--font-size-small);
+}
+#app .archive ul li .post-meta > span {
+  margin-right: 0;
+}
+#app .quote {
+  color: var(--heading-color);
+}
+#app .quote i {
+  color: var(--purple-dark);
+  opacity: 0.65;
+}
+#tag .content {
+  justify-content: flex-start;
+}
+#tag .content li span {
+  display: inline-block;
+  border-radius: 20px;
+  border: 1px solid var(--surface-border);
+  color: var(--link-color);
+}
+#tag .content li span:hover {
+  background-color: rgba(113, 155, 133, 0.18);
+}
+#post article .post-body {
+  /* 文章正文使用更实的浅底，防止背景图干扰长时间阅读；代码块仍保留等宽字体。 */
+  padding: 12px 24px 32px;
+  border-radius: 0 0 var(--card-radius) var(--card-radius);
+  background-color: rgba(255, 255, 252, 0.94);
+  font-size: 16px;
+}
+#post .markdown {
+  font-size: inherit;
+  line-height: 1.95;
+  overflow-wrap: anywhere;
+}
+#post .markdown p {
+  word-break: normal;
+}
+#post .markdown :is(h1, h2, h3, h4, h5, h6) {
+  color: var(--heading-color);
+  margin-top: 28px;
+}
+#post .markdown h2 { font-size: 22px; }
+#post .markdown h3 { font-size: 19px; }
+#post .markdown h4 { font-size: 17px; }
+#post .markdown :is(h5, h6) { font-size: 16px; }
+#post .markdown pre {
+  border-radius: 8px;
+  overflow: hidden;
+}
+#post .markdown blockquote {
+  background-color: var(--bg-dark);
+  border-radius: 8px;
+  box-shadow: none;
+}
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--link-color);
+  outline-offset: 4px;
+}
+@media (max-width: 767px) {
+  #app .main {
+    width: calc(100% - 28px);
+  }
+  #post article .post-body {
+    padding: 8px 4px 24px;
+  }
+  #post .markdown h2 { font-size: 21px; }
+  #post .markdown h3 { font-size: 18px; }
+}
+

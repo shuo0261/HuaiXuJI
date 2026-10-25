@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+# Sitemap 地址由生产构建读取 .vitepress/site.js 的 url 生成，未配置时省略。

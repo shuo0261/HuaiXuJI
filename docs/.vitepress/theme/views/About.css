@@ -1,0 +1,155 @@
+/* About 样式，移植自 aurora-master/src/views/About/index.scss（SCSS → CSS） */
+#about .page {
+  padding-top: 16px;
+  border-radius: 3px;
+}
+@media screen and (min-width: 768px) {
+  #about .page {
+    background-color: var(--bg-white-dim);
+    box-shadow: var(--card-shadow);
+  }
+}
+
+#about .content {
+  padding: 16px;
+}
+
+#about .content .header {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+@media screen and (min-width: 768px) {
+  #about .content .header {
+    flex-direction: row;
+  }
+}
+@media screen and (max-width: 767px) {
+  #about .content .header {
+    flex-direction: column;
+  }
+}
+
+#about .content .header img {
+  display: block;
+  margin: 0;
+  border-radius: 50%;
+  border: 4px solid transparent;
+  transition: transform 1s ease-out;
+}
+@media screen and (min-width: 768px) {
+  #about .content .header img {
+    width: var(--avatar-size-pc);
+    height: var(--avatar-size-pc);
+    min-width: var(--avatar-size-pc);
+    min-height: var(--avatar-size-pc);
+    box-shadow: var(--card-shadow);
+  }
+  #about .content .header img:hover {
+    animation-play-state: paused;
+    transform: rotateZ(360deg);
+  }
+}
+@media screen and (max-width: 767px) {
+  #about .content .header img {
+    margin-bottom: 16px;
+    width: var(--avatar-size-sp);
+    height: var(--avatar-size-sp);
+    min-width: var(--avatar-size-sp);
+    min-height: var(--avatar-size-sp);
+    box-shadow: var(--card-shadow-light);
+  }
+}
+
+#about .content .header .info {
+  margin-left: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1.8;
+  text-align: left;
+}
+#about .content .header .info .icon {
+  margin-right: 3px;
+}
+
+#about .content .contact {
+  display: flex;
+  justify-content: center;
+  margin: 16px 0 22px;
+}
+#about .content .contact a {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  border: 4px solid var(--bg-white-dim);
+  box-shadow: var(--card-shadow-light);
+  background-color: var(--bg-dark);
+  transition: all 0.3s ease-out;
+}
+#about .content .contact a img {
+}
+@media screen and (min-width: 768px) {
+  #about .content .contact a img {
+    width: 30px;
+    height: 30px;
+  }
+}
+@media screen and (max-width: 767px) {
+  #about .content .contact a img {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+@media screen and (min-width: 768px) {
+  #about .content .contact a {
+    margin: 0 30px;
+    width: var(--contact-size-pc);
+    height: var(--contact-size-pc);
+    min-width: var(--contact-size-pc);
+    min-height: var(--contact-size-pc);
+  }
+  #about .content .contact a:nth-child(1) img {
+    width: 26px;
+    height: 26px;
+  }
+  #about .content .contact a:nth-child(1):hover {
+    background-color: var(--concat-email-color);
+    box-shadow: 0 0 10px var(--concat-email-color);
+  }
+  #about .content .contact a:nth-child(2):hover {
+    background-color: var(--concat-github-color);
+    box-shadow: 0 0 10px var(--concat-github-color);
+  }
+  #about .content .contact a:nth-child(3) img {
+    width: 26px;
+    height: 26px;
+  }
+  #about .content .contact a:nth-child(3):hover {
+    background-color: var(--concat-telegram-color);
+    box-shadow: 0 0 10px var(--concat-telegram-color);
+  }
+  #about .content .contact a:nth-child(4):hover {
+    background-color: var(--concat-music-color);
+    box-shadow: 0 0 10px var(--concat-music-color);
+  }
+  #about .content .contact a:nth-child(5) img {
+    width: 24px;
+    height: 24px;
+  }
+  #about .content .contact a:nth-child(5):hover {
+    background-color: var(--concat-rss-color);
+    box-shadow: 0 0 10px var(--concat-rss-color);
+  }
+}
+@media screen and (max-width: 767px) {
+  #about .content .contact a {
+    margin: 0 20px;
+    width: var(--contact-size-sp);
+    height: var(--contact-size-sp);
+    min-width: var(--contact-size-sp);
+    min-height: var(--contact-size-sp);
+  }
+}

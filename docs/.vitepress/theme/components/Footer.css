@@ -1,0 +1,162 @@
+/* Footer 样式，移植自 aurora-master/src/components/Footer/index.scss（SCSS → CSS） */
+footer {
+  /* 备案行可按配置增加并自动换行；页脚回到文档流，不依赖 Layout 固定底部留白去猜高度，避免覆盖正文。 */
+  position: relative;
+  margin-top: 24px;
+  width: 100%;
+}
+
+footer .prpr {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  z-index: var(--zindex-3);
+}
+@media screen and (max-width: 767px) {
+  footer .prpr {
+    display: none;
+  }
+}
+
+footer .prpr .waifu {
+  position: relative;
+  height: 250px;
+}
+
+footer .prpr .waifu .tips {
+  position: absolute;
+  margin: 0 15px;
+  padding: 5px 10px;
+  width: 250px;
+  min-height: 70px;
+  border-radius: 8px;
+  background-color: var(--bg-white-deep);
+  box-shadow: var(--card-shadow);
+  text-overflow: ellipsis;
+  overflow: hidden;
+  opacity: 1;
+  animation: shake 50s ease-in-out 0s infinite;
+  z-index: var(--zindex-bottom);
+}
+footer .prpr .waifu .tips.pio {
+  margin-top: -6px;
+}
+footer .prpr .waifu .tips.tia {
+  margin-top: -12px;
+}
+
+/* Footer 的 250px 一言只在侧边留白足够时展示：876px 主栏在 1440px 屏幕两侧约留 280px。
+   小桌面和平板隐藏提示文字，避免覆盖阅读内容；看板娘、工具和其他 Footer 功能保持原样。 */
+@media screen and (max-width: 1439px) {
+  footer .prpr .waifu .tips {
+    display: none;
+  }
+}
+
+footer .prpr .tool {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+}
+
+footer .prpr .tool .menu {
+  border-radius: 0 3px 3px 0;
+  background-color: var(--bg-white-deep);
+  transition: all 0.3s ease-out;
+  transform: translateX(-36px) scaleY(0.5);
+  transform-origin: bottom;
+}
+footer .prpr .tool .menu:hover {
+  background-color: var(--purple-dark);
+  transform: translateX(0) scaleY(1);
+}
+footer .prpr .tool .menu:hover .devil {
+  display: none;
+}
+
+footer .prpr .tool .menu ul {
+  margin-bottom: 66px;
+  width: 50px;
+  list-style: none;
+  text-align: center;
+  overflow: hidden;
+}
+footer .prpr .tool .menu ul li {
+  padding: 2px 0;
+}
+footer .prpr .tool .menu ul li:hover {
+  background-color: var(--purple-dim);
+}
+footer .prpr .tool .menu ul li .icon {
+  color: var(--whitesmoke);
+}
+
+footer .prpr .tool .menu .devil {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  width: 15px;
+  transform: translateY(-50%) scaleY(2);
+}
+footer .prpr .tool .menu .devil .icon {
+  color: var(--purple);
+}
+footer .prpr .tool .menu .devil .icon::before {
+  font-size: var(--font-size-small);
+  transform: rotate(-90deg);
+}
+
+footer .site-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 0 16px;
+  color: var(--text-muted);
+  text-align: center;
+  line-height: 1.65;
+  overflow-wrap: anywhere;
+}
+footer .site-info p {
+  margin: 0;
+  max-width: 100%;
+}
+footer .site-info .motto {
+  font-size: 14px;
+}
+footer .site-info .credits {
+  font-size: 12px;
+}
+footer .site-info .filings {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px 12px;
+  font-size: 12px;
+}
+footer .site-info .filings a {
+  max-width: 100%;
+}
+
+footer .site-info a {
+  color: inherit;
+  transition: color 0.3s ease-out;
+}
+footer .site-info a:hover {
+  color: var(--link-color);
+  text-decoration: underline;
+}
+
+footer .sakura {
+  position: fixed;
+  right: 12px;
+  bottom: 12px;
+  width: 28px;
+  height: 28px;
+  animation: rotate 2s linear 0s infinite;
+}
+@media screen and (max-width: 767px) {
+  footer .sakura {
+    display: none;
+  }
+}

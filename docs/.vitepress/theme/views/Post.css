@@ -1,0 +1,187 @@
+/* Post 样式，移植自 aurora-master/src/views/Post/index.scss（SCSS → CSS） */
+#post article {
+  position: relative;
+  overflow: unset;
+  border-radius: 3px;
+  background-color: var(--bg-white-deep);
+}
+@media screen and (min-width: 768px) {
+  #post article {
+    box-shadow: var(--card-shadow);
+  }
+}
+@media screen and (max-width: 767px) {
+  #post article {
+    box-shadow: var(--card-shadow-light);
+  }
+}
+
+#post article .post-header {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--card-radius) var(--card-radius) 0 0;
+}
+#post article .post-header .wrapper {
+  transition: transform 0.5s ease-out;
+}
+#post article .post-header:hover .wrapper {
+  transform: scale(1.04);
+}
+#post article .post-header .post-head {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  color: var(--heading-color);
+  background-color: rgba(255, 255, 252, 0.92);
+  backdrop-filter: blur(10px) saturate(115%);
+  border-top: 1px solid rgba(255, 255, 255, 0.65);
+}
+@media screen and (min-width: 768px) {
+  #post article .post-header .post-head {
+    padding: var(--card-padding);
+    min-height: 90px;
+  }
+}
+@media screen and (max-width: 767px) {
+  #post article .post-header .post-head {
+    /* Post 的移动阅读阶段让标题参与排版，避免长标题与元信息在封面内重叠。 */
+    position: relative;
+    padding: 16px;
+    min-height: 80px;
+  }
+}
+
+#post article .post-header .post-head .post-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+@media screen and (min-width: 768px) {
+  #post article .post-header .post-head .post-title {
+    min-height: 34px;
+  }
+}
+@media screen and (max-width: 767px) {
+  #post article .post-header .post-head .post-title {
+    min-height: 24px;
+  }
+}
+#post article .post-header .post-head .post-title h1 {
+  font-weight: var(--font-weight-normal);
+  font-size: 26px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+#post article .post-header .post-head .post-title > span {
+  color: var(--text-muted);
+  max-width: 28%;
+  overflow-wrap: anywhere;
+}
+@media screen and (max-width: 767px) {
+  #post article .post-header .post-head .post-title h1 {
+    font-size: 22px;
+  }
+}
+
+#post article .post-header .post-head .post-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  font-size: var(--font-size-small);
+  color: var(--text-muted);
+}
+@media screen and (min-width: 768px) {
+  #post article .post-header .post-head .post-meta {
+    margin-top: 8px;
+  }
+}
+@media screen and (max-width: 767px) {
+  #post article .post-header .post-head .post-meta {
+    margin-top: 4px;
+  }
+}
+#post article .post-header .post-head .post-meta > span {
+  display: flex;
+  align-items: center;
+  margin-right: 0;
+  white-space: nowrap;
+}
+#post article .post-header .post-head .post-meta > span:last-child {
+  margin-right: 0;
+}
+#post article .post-header .post-head .post-meta > span span {
+  padding-right: 6px;
+}
+#post article .post-header .post-head .post-meta > span span:last-child {
+  padding-right: 0;
+}
+#post article .post-header .post-head .post-meta > span .icon {
+  margin-right: 4px;
+}
+#post article .post-header .post-head .post-meta > span .icon-fire {
+  margin-top: -2px;
+}
+#post article .post-header .post-head .post-meta > span .icon::before {
+  display: unset;
+}
+
+#post article .post-body {
+  position: relative;
+  padding: 25px 0;
+}
+
+/* 目录链接和原生锚点直链共用偏移，避开手机固定返回按钮及阅读起点。 */
+#post .markdown :is(h1, h2, h3, h4, h5, h6) { scroll-margin-top: 80px; }
+
+/* 评论占位（Artalk 待接入） */
+#artalk-comments {
+  margin-top: 25px;
+}
+
+/* 移动端返回按钮（原版无此元素；移动端文章页隐藏 header 后需要返回入口）
+   仅 <=767px（主题移动端断点）显示，>=768px 桌面布局完全不受影响 */
+.back-btn {
+  display: none;
+}
+@media screen and (max-width: 767px) {
+  .back-btn {
+    display: flex;
+    position: fixed;
+    top: 16px;
+    left: 16px;
+    z-index: var(--zindex-3);
+    width: 40px;
+    height: 40px;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    background-color: var(--bg-white-deep);
+    backdrop-filter: blur(4px) saturate(150%);
+    box-shadow: var(--card-shadow-light);
+    color: var(--text-color);
+    font-size: var(--font-size-large);
+    transition: all 0.3s ease-out;
+  }
+  .back-btn:active {
+    background-color: var(--purple-dark);
+    color: white;
+  }
+  .back-btn .icon {
+    margin-right: -2px; /* 左箭头字形视觉居中修正 */
+  }
+}
+
+/* 移动端文章详情页 meta 行：禁止日期等内部断行，字号缩小（仅移动端，PC 端不变） */
+@media screen and (max-width: 767px) {
+  #post article .post-header .post-head .post-meta {
+    font-size: 0.75rem;
+  }
+  #post article .post-header .post-head .post-meta > span {
+    white-space: nowrap;
+  }
+  #post article .post-header .post-head .post-meta > span .icon {
+    margin-right: 3px;
+  }
+}

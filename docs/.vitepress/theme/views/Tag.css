@@ -1,0 +1,57 @@
+/* Tag 样式，移植自 aurora-master/src/views/Tag/index.scss（SCSS → CSS） */
+#tag .page {
+  padding: 16px 0;
+  overflow: hidden;
+  border-radius: 3px;
+}
+@media screen and (min-width: 768px) {
+  #tag .page {
+    background-color: var(--bg-white-dim);
+    box-shadow: var(--card-shadow);
+  }
+}
+
+#tag .content {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  padding: 16px;
+}
+#tag .content li {
+  list-style: none;
+}
+@media screen and (min-width: 768px) {
+  #tag .content li {
+    margin: 10px 12px;
+  }
+}
+@media screen and (max-width: 767px) {
+  #tag .content li {
+    margin: 10px 6px;
+  }
+}
+#tag .content li span {
+  padding: 4px 10px 6px;
+  border-radius: 3px;
+  background-color: var(--bg-dark);
+  transition: background 0.3s ease-out;
+}
+#tag .content li span:hover {
+  background-color: var(--bg-dark-deep);
+}
+
+#tag .clean {
+  padding-left: 22px;
+  text-align: left;
+}
+#tag .clean .clean-btn {
+  margin-left: 12px;
+  padding: 5px 10px;
+  border-radius: 3px;
+  background-color: var(--bg-dark);
+  transition: background 0.3s ease-out;
+  color: var(--link-color);
+}
+#tag .clean .clean-btn:hover {
+  background-color: var(--bg-dark-dim);
+}

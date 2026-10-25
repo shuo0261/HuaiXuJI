@@ -1,0 +1,195 @@
+/* Friend 样式，移植自 aurora-master/src/views/Friend/index.scss（SCSS → CSS） */
+#friend .page {
+  padding-top: 16px;
+  border-radius: 3px;
+}
+@media screen and (min-width: 768px) {
+  #friend .page {
+    background-color: var(--bg-white-dim);
+    box-shadow: var(--card-shadow);
+  }
+}
+
+#friend .me {
+  display: flex;
+  flex-direction: column;
+  line-height: var(--line-height-block);
+}
+@media screen and (min-width: 768px) {
+  #friend .me {
+    margin: 0 32px 10px;
+  }
+}
+@media screen and (max-width: 767px) {
+  #friend .me {
+    margin: 0 16px 6px;
+  }
+}
+#friend .me span:first-child {
+  margin-bottom: 6px;
+}
+#friend .me span:last-child {
+  margin-top: 6px;
+}
+#friend .me a {
+  position: relative;
+  color: var(--link-color);
+}
+#friend .me a::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 1.5px;
+  background-color: var(--link-color);
+  transform: scaleX(0);
+  transform-origin: bottom right;
+  transition: transform 0.3s ease-out;
+}
+#friend .me a:hover::after {
+  transform-origin: bottom left;
+  transform: scaleX(1);
+}
+#friend .me a:hover::before {
+  opacity: 1;
+  transform: scale(1) translateY(-100%);
+}
+#friend .me a:before {
+  content: '\e809  ' attr(href);
+  position: absolute;
+  padding: 0px 4px;
+  width: max-content;
+  pointer-events: none;
+  font-family: 'Fontello';
+  font-size: var(--font-size-small);
+  box-shadow: var(--card-shadow-light);
+  border-radius: 3px;
+  background-color: white;
+  opacity: 0;
+  transform: scale(0.7) translateY(-75%);
+  transform-origin: left center;
+  transition: all 0.3s ease 0s;
+}
+
+#friend .content {
+  display: grid;
+  padding: 16px;
+}
+@media screen and (min-width: 768px) {
+  #friend .content {
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+  }
+}
+@media screen and (max-width: 767px) {
+  #friend .content {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+#friend .content li {
+  list-style: none;
+}
+#friend .content li > a {
+  position: relative;
+  display: block;
+  margin: 0 auto 16px;
+  overflow: hidden;
+  border-radius: 3px;
+  transition: var(--transition-base);
+  box-shadow: var(--card-shadow-light);
+}
+@media screen and (min-width: 768px) {
+  #friend .content li > a {
+    width: 196px;
+    height: 110px;
+  }
+}
+@media screen and (max-width: 767px) {
+  #friend .content li > a {
+    width: 178px;
+    height: 100px;
+  }
+}
+@media screen and (min-width: 768px) {
+  #friend .content li > a:hover {
+    box-shadow: var(--card-shadow-light-hover);
+  }
+  #friend .content li > a:hover .cover {
+    transform: scale(1.06);
+  }
+  #friend .content li > a:hover .info {
+    transform: translateY(-100%);
+  }
+  #friend .content li > a:hover .info span {
+    color: var(--link-color);
+  }
+}
+
+#friend .content li > a .cover {
+  width: 100%;
+  transition: transform 0.5s ease-out;
+}
+
+#friend .content li > a .info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+  border-radius: 3px;
+  background-color: var(--bg-white);
+  transition: transform 0.5s cubic-bezier(0.6, 0.2, 0.1, 1) 0s;
+}
+@media screen and (min-width: 768px) {
+  #friend .content li > a .info {
+    width: 196px;
+    height: 110px;
+  }
+}
+@media screen and (max-width: 767px) {
+  #friend .content li > a .info {
+    width: 178px;
+    height: 100px;
+  }
+}
+#friend .content li > a .info img {
+  border-radius: 50%;
+  box-shadow: 0 0 10px var(--bg-dark-deep);
+  z-index: var(--zindex-1);
+}
+@media screen and (min-width: 768px) {
+  #friend .content li > a .info img {
+    margin-bottom: -16px;
+    width: 50px;
+    height: 50px;
+  }
+}
+@media screen and (max-width: 767px) {
+  #friend .content li > a .info img {
+    margin-bottom: -20px;
+    width: 40px;
+    height: 40px;
+  }
+}
+#friend .content li > a .info span {
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 0 10px var(--bg-dark-deep);
+  background-color: var(--bg-white-dim);
+}
+@media screen and (min-width: 768px) {
+  #friend .content li > a .info span {
+    padding: 20px 0 8px;
+    font-size: var(--font-size-large);
+  }
+}
+@media screen and (max-width: 767px) {
+  #friend .content li > a .info span {
+    padding: 24px 0 4px;
+    font-size: var(--font-size-base);
+  }
+}

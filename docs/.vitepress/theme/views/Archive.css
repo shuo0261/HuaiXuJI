@@ -1,0 +1,12 @@
+/* Archive 样式，移植自 aurora-master/src/views/Archive/index.scss（SCSS → CSS） */
+#archive .page {
+  padding: 16px 0;
+  overflow: hidden;
+  border-radius: 3px;
+}
+@media screen and (min-width: 768px) {
+  #archive .page {
+    background-color: var(--bg-white-dim);
+    box-shadow: var(--card-shadow);
+  }
+}

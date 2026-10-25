@@ -1,0 +1,115 @@
+/* Category 样式，移植自 aurora-master/src/views/Category/index.scss（SCSS → CSS） */
+#category .page {
+  padding: 16px 0;
+  overflow: hidden;
+  border-radius: 3px;
+}
+@media screen and (min-width: 768px) {
+  #category .page {
+    background-color: var(--bg-white-dim);
+    box-shadow: var(--card-shadow);
+  }
+}
+
+#category .content {
+  display: grid;
+  grid-column-gap: 16px;
+  padding: 16px 16px 0;
+}
+@media screen and (min-width: 768px) {
+  #category .content {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+}
+@media screen and (max-width: 767px) {
+  #category .content {
+    grid-template-columns: 1fr;
+  }
+}
+
+#category .content li {
+  list-style: none;
+  position: relative;
+  margin-bottom: 16px;
+  height: 160px;
+  overflow: hidden;
+  border-radius: 3px;
+  background-color: var(--bg-white-dim);
+  box-shadow: var(--card-shadow-light);
+  transition: var(--transition-base);
+}
+@media screen and (min-width: 768px) {
+  #category .content li:hover .avatar {
+    animation-play-state: paused;
+    transform: rotateZ(360deg);
+  }
+}
+
+#category .content li .bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+#category .content li .meta {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  text-align: justify;
+  text-shadow: 0 0 1px var(--bg-dark-deep);
+  background-color: var(--bg-white-dim);
+}
+#category .content li .meta > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px 0;
+  height: 114px;
+}
+#category .content li .meta .avatar {
+  margin: 0;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 4px solid var(--bg-white-dim);
+  box-shadow: var(--card-shadow);
+  background-color: var(--bg-dark);
+  will-change: transform;
+  transition: transform 1s ease-out;
+}
+#category .content li .meta span {
+  padding: 0 12px;
+  height: 40px;
+  line-height: 40px;
+  border-radius: 3px;
+  box-shadow: var(--card-shadow-light);
+  background-color: var(--bg-white-deep);
+}
+
+#category .content li p {
+  position: absolute;
+  bottom: 0;
+  padding: 0 32px;
+  width: 100%;
+  height: 46px;
+  line-height: 46px;
+}
+
+#category .clean {
+  padding-left: 22px;
+  text-align: left;
+}
+#category .clean .clean-btn {
+  margin-left: 12px;
+  padding: 5px 10px;
+  border-radius: 3px;
+  background-color: var(--bg-dark);
+  transition: all 0.3s ease-out;
+  color: var(--link-color);
+}
+#category .clean .clean-btn:hover {
+  background-color: var(--bg-dark-dim);
+}

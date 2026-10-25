@@ -1,0 +1,224 @@
+/* Home 样式，移植自 aurora-master/src/views/Home/index.scss（SCSS → CSS） */
+#home .content {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  perspective: 1200;
+}
+@media screen and (min-width: 768px) {
+  #home .content {
+    justify-content: space-between;
+  }
+}
+@media screen and (max-width: 767px) {
+  #home .content {
+    justify-content: space-around;
+  }
+}
+
+#home article {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  transition: var(--transition-base);
+  will-change: transform;
+  overflow: hidden;
+  border-radius: var(--card-radius);
+  background-color: var(--bg-white-deep);
+  backdrop-filter: blur(8px);
+}
+@media screen and (min-width: 768px) {
+  #home article {
+    box-shadow: var(--card-shadow);
+  }
+}
+@media screen and (max-width: 767px) {
+  #home article {
+    box-shadow: var(--card-shadow-light);
+  }
+}
+@media screen and (min-width: 768px) {
+  #home article {
+    width: calc((100% - 24px) / 2);
+  }
+  #home article::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 150px;
+    height: 100%;
+    transform: skewX(-30deg);
+    transition: left 1s ease 0s;
+    z-index: var(--zindex-1);
+    background: linear-gradient(
+      to right,
+      rgba(255, 255, 255, 0) 0,
+      rgba(255, 255, 255, 0.5) 50%,
+      rgba(255, 255, 255, 0) 100%
+    );
+  }
+  #home article:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--card-shadow-hover);
+  }
+  #home article:hover::before {
+    left: 150%;
+  }
+}
+@media screen and (max-width: 767px) {
+  #home article {
+    /* 外侧留白由公共 main 承担，卡片占满列宽，避免移动端重复叠加边距。 */
+    width: 100%;
+  }
+}
+
+#home article > a {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+#home article .post-header {
+  position: relative;
+  overflow: hidden;
+}
+#home article .post-header .post-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  gap: 10px;
+  padding: 12px 16px;
+  width: 100%;
+  min-height: 58px;
+  /* 首页卡片展示阶段借鉴原版毛玻璃；浅底保证明暗封面上的标题都可读，不恢复跑色动画。 */
+  background-color: rgba(255, 255, 252, 0.9);
+  backdrop-filter: blur(10px) saturate(115%);
+  border-top: 1px solid rgba(255, 255, 255, 0.65);
+}
+
+#home article .post-header h3,
+#home article .post-header span {
+  color: var(--heading-color);
+}
+
+#home article .post-header h3 {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  line-height: 1.5;
+  font-size: var(--font-size-larger);
+  font-weight: var(--font-weight-normal);
+}
+
+#home article .post-header span {
+  flex-shrink: 0;
+  max-width: 28%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--text-muted);
+  font-size: var(--font-size-small);
+  text-transform: capitalize;
+}
+@media screen and (max-width: 767px) {
+  #home article .post-header span {
+    transform: translateY(2px);
+  }
+}
+
+#home article .post-body {
+  flex: 1;
+  padding: var(--card-padding);
+  text-align: justify;
+  line-height: 1.9;
+}
+#home article .post-body p {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  margin: 0;
+  font-size: var(--font-size-base);
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+@media screen and (min-width: 768px) {
+  #home article .post-body p {
+    -webkit-line-clamp: 3;
+  }
+}
+@media screen and (max-width: 767px) {
+  #home article .post-body p {
+    -webkit-line-clamp: 4;
+  }
+}
+#home article .post-body p a::before {
+  display: none;
+}
+
+#home article .post-meta {
+  display: flex;
+  padding: var(--card-padding);
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  min-height: 48px;
+  font-size: var(--font-size-small);
+  color: var(--text-muted);
+  border-top: 1px solid var(--bg-dark);
+  word-break: keep-all;
+}
+@media screen and (max-width: 767px) {
+  #home article .post-meta {
+    max-width: 94vw;
+    overflow: auto;
+  }
+}
+
+#home article .post-meta > span {
+  display: flex;
+  align-items: center;
+  margin-right: 0;
+  white-space: nowrap;
+}
+#home article .post-meta > span:last-child {
+  margin-right: 0;
+}
+#home article .post-meta > span span {
+  padding-right: 6px;
+}
+#home article .post-meta > span span:last-child {
+  padding-right: 0;
+}
+#home article .post-meta > span .icon {
+  margin-right: 4px;
+}
+#home article .post-meta > span .icon-fire {
+  margin-top: -2px;
+}
+
+#home .btn-group {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 12px 0 24px;
+}
+
+/* 移动端卡片信息栏：防止日期等被挤压断行，排不下时整项换行（仅移动端，PC 端不变） */
+@media screen and (max-width: 767px) {
+  #home article .post-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 12px;
+    height: auto;
+    min-height: 50px;
+    font-size: 0.75rem;
+  }
+  #home article .post-meta > span {
+    white-space: nowrap;
+    margin-right: 0; /* 间距改由容器的 gap 控制，避免双重间距 */
+  }
+  #home article .post-meta > span .icon {
+    margin-right: 3px;
+  }
+}
