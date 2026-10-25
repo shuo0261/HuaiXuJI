@@ -14,6 +14,15 @@
   padding: 16px;
 }
 
+/* About 新增长文在平板上占满主栏，左侧看板娘会压住段落；只在本页收起装饰。
+   保留 canvas 的布局尺寸，避免站内返回其他页面时影响现有渲染器，无需重建模型。 */
+@media screen and (min-width: 768px) and (max-width: 1023px) {
+  #app:has(#about) footer .prpr {
+    visibility: hidden;
+    pointer-events: none;
+  }
+}
+
 #about .content .header {
   display: flex;
   justify-content: flex-start;
