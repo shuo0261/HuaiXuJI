@@ -15,11 +15,8 @@
                 <Cover
                   :src="post.cover.src"
                   :cover-key="post.cover.key"
-                  :cover-index="post.cover.index"
                   :fallback="post.cover.fallback"
                   :alt="post.cover.title"
-                  :loadCover="index < LOAD_INX"
-                  @loadNext="loadNext"
                 />
                 <div class="post-head">
                   <h3>{{ post.title }}</h3>
@@ -87,7 +84,6 @@ const pageSize = 10
 const posts = ref([])
 const list = ref([])
 const times = ref({})
-const LOAD_INX = ref(4)
 
 const totalCount = computed(() => store.totalCount)
 const maxPage = computed(() => Math.ceil(totalCount.value / pageSize))
@@ -105,7 +101,6 @@ async function queryPostsPage(type = 'next') {
   if (loading.value) return
   const queryPage = type === 'prev' ? page.value - 1 : page.value + 1
   page.value = queryPage
-  LOAD_INX.value = 4
 
   if (list.value[queryPage]) {
     posts.value = list.value[queryPage]
@@ -132,11 +127,6 @@ async function queryPostsPage(type = 'next') {
 function scrollTop() {
   if (typeof window === 'undefined') return
   window.scrollTo({ top: 0, behavior: 'smooth' })
-}
-
-// 按顺序加载封面图
-function loadNext() {
-  LOAD_INX.value += 1
 }
 
 // 看板娘

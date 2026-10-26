@@ -1,7 +1,7 @@
 <template>
   <div class="wrapper">
-    <img class="placeholder" :src="placeholderSrc" alt="封面占位" @error="placeholderSrc = fallbackCover" />
-    <img :class="['cover', visible && (reused ? 'ready' : 'fadeIn')]" :src="imgSrc" :alt="alt" loading="lazy" @error="imgSrc = fallbackCover" />
+    <img class="placeholder" :src="placeholderSrc" alt="封面占位" @error="placeholderFailed = true" />
+    <img ref="image" :class="['cover', loaded && 'ready']" :src="imgSrc" :alt="alt" loading="lazy" decoding="async" @load="loaded = true" @error="useFallback" />
   </div>
 </template>
 
@@ -9,14 +9,12 @@
 /**
  * Cover，移植自 aurora-master/src/components/Cover/index.vue
  * Vue2 Options API → Vue3 <script setup>，模板原样保留
- * 图片相关增强：容器固定 16:9 宽高比 + object-fit: cover，避免封面图把卡片撑变形；
- * 可见封面图增加 loading="lazy"
+ * 首页和文章详情共用：固定 16:9，原生懒加载；远程地址直接用于实际 img，不额外预取或跨域探测。
  */
-import { ref, watch, onMounted } from 'vue'
+import { ref, computed, watch, onMounted, nextTick } from 'vue'
 import { withBase } from 'vitepress'
-import config from '../config'
 import { fileCDN } from '../utils'
-import { isRandomCover, resolveArticleCover, cachedArticleCover } from '../article-covers.js'
+import { coverFallback, resolveArticleCover } from '../article-covers.js'
 
 const props = defineProps({
   src: {
@@ -27,55 +25,43 @@ const props = defineProps({
     type: String,
     default: '',
   },
-  loadCover: {
-    type: Boolean,
-    default: false,
-  },
   coverKey: { type: String, default: '' },
-  coverIndex: { type: Number, default: 0 },
   fallback: { type: String, default: '' },
 })
 
-const emit = defineEmits(['loadNext'])
+const image = ref(null)
+const loaded = ref(false)
+const failed = ref(false)
+const placeholderFailed = ref(false)
+const source = computed(() => withBase(fileCDN(resolveArticleCover(props.src, props.coverKey))))
+const localDefault = computed(() => withBase(props.fallback || coverFallback(props.coverKey)))
+// 显式封面本身也可能就是默认 SVG；失败时必须换一个地址，不能回退到同一张坏图。
+const fallbackCover = computed(() => localDefault.value === source.value ? withBase('/assets/apple-touch-icon.png') : localDefault.value)
+// 本地封面可直接作为 SSR 占位，水合时不闪换其他图；外链加载期间仍显示小体积本地图。
+const placeholderSrc = computed(() => placeholderFailed.value ? fallbackCover.value
+  : source.value.startsWith('/') && !source.value.startsWith('//') ? source.value : localDefault.value)
+const imgSrc = computed(() => failed.value ? fallbackCover.value : source.value)
 
-const fallbackCover = withBase(props.fallback || config.defaultShareImage)
-// 低成本本地占位不再请求一张所有卡片共享的随机图；路由返回时先使用本次已经选好的地址。
-const placeholderSrc = ref(fallbackCover)
-const cached = cachedArticleCover(props.src, props.coverKey)
-const reused = Boolean(cached)
-const imgSrc = ref(cached || (!isRandomCover(props.src) && props.loadCover ? fileCDN(props.src) : fallbackCover))
-const visible = ref(props.loadCover)
-
-const loadImg = async () => {
-  // SSR 不请求外部接口；普通显式封面直接输出，随机封面以对应的本地封面占位。
-  if (typeof Image === 'undefined') {
-    imgSrc.value = isRandomCover(props.src) ? fallbackCover : fileCDN(props.src)
-    visible.value = true
-    return
-  }
-
-  const cdnUrl = fileCDN(await resolveArticleCover(props.src, props.coverKey, props.coverIndex))
-
-  const img = new Image()
-  img.onload = img.onerror = (event) => {
-    // 首页/文章共用的封面在浏览器加载阶段失败时，改用已有本地图片；随机接口不能同时充当唯一兜底。
-    const failed = event.type === 'error'
-    imgSrc.value = failed ? fallbackCover : cdnUrl
-    if (failed) placeholderSrc.value = fallbackCover
-    emit('loadNext')
-    // 等待 DOM 更新后展示
-    setTimeout(() => (visible.value = true), 0)
-  }
-  img.src = cdnUrl
+function useFallback() {
+  loaded.value = false
+  // 实际 img 的失败事件只回退一次；本地兜底也失败时不反复改 src，不形成重试循环。
+  failed.value = true
+  placeholderFailed.value = true
 }
-
-watch(
-  () => props.loadCover,
-  (val) => {
-    if (val) loadImg()
-  },
-  { immediate: true }
-)
+function syncImage() {
+  // SSR 图片可能在 Vue 水合前完成或失败；只读取现有 img 状态补齐展示，不创建新请求。
+  if (!image.value?.complete) return
+  if (image.value.naturalWidth) loaded.value = true
+  else useFallback()
+}
+onMounted(syncImage)
+watch(source, async () => {
+  failed.value = false
+  loaded.value = false
+  placeholderFailed.value = false
+  await nextTick()
+  syncImage()
+})
 </script>
 
 <style scoped>
@@ -96,9 +82,6 @@ watch(
 }
 .cover {
   opacity: 0;
-}
-.fadeIn {
-  animation: coverIn 0.8s ease-out forwards;
 }
 .ready { opacity: 1; }
 </style>

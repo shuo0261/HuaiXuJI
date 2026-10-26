@@ -3,7 +3,7 @@ title: "槐序霁部署指南：IIS、Nginx 与 Docker"
 date: "2026-10-25"
 category: "部署教程"
 tags: ["VitePress", "IIS", "Nginx", "Docker", "部署教程"]
-cover: "https://t.alcy.cc/ysz"
+cover: "/images/covers/cloud.svg"
 coverTitle: "部署手册"
 description: "从槐序霁的实际配置和静态产物出发，说明环境准备、个性化设置、IIS、Nginx、Docker 部署，以及 Cloudflare 缓存、HTTPS 和发布验收。"
 hot: 1
@@ -54,8 +54,8 @@ post/huaixuji-deployment-guide.html
 | 友链 | 同文件 `friends`：`name`、`link`、`description`、`avatar`、`cover` |
 | 文章、分类、标签 | `docs/posts/*.md` 的 `category` 单分类与 `tags` 数组；自动聚合，不手工维护索引 |
 | 分类说明、图片 | `theme/config.js` 的 `categories`，按分类名称配置 `summary`、`cover`；未配置时自动回退 |
-| 文章封面 | Frontmatter 的 `cover`、`coverTitle`；普通显式地址优先，省略时使用独立本地封面 |
-| 稳定分享图 | 同文件 `defaultShareImage`，目前复用 `/assets/apple-touch-icon.png`；封面本地兜底见 `docs/public/images/covers/README.txt` |
+| 文章封面 | Frontmatter 的 `cover`、`coverTitle`；显式本地/HTTPS 地址优先，省略时按 slug 稳定映射到本地默认图 |
+| 稳定分享图 | 文章复用稳定的 `cover`；原 `defaultShareImage` 配置保持不变，封面本地兜底见 `docs/public/images/covers/README.txt` |
 | 当前改版仓库 | `theme/config.js` 的 `rebuiltRepository`；已配置为 `https://github.com/shuo0261/HuaiXuJI`，留空不显示页脚仓库链接 |
 | 背景池 | `docs/public/img/` 与其中 README；启动/构建自动筛选 JPG、PNG、WebP、AVIF，单张不超过 3 MB |
 | Maple 字体 | `theme/assets/maple-mono-nf-cn.css`、`docs/public/fonts/maple-mono-nf-cn/README.txt`；保留 NF CN v7.9、400/700、Unicode 范围和许可 |
@@ -69,24 +69,24 @@ post/huaixuji-deployment-guide.html
 
 先改 `site.js`，再检查页面文案和自己的资料；不要填写推测的个人身份、邮箱或仓库地址。背景图片只放有权使用的素材，建议 300–800 KB，不需要手填清单，也不会定时轮播。完整刷新选一张，站内切换保持不变。
 
-三篇初始文章显式使用 `https://t.alcy.cc/ysz`。组件通过官方多图接口独立选择，在同次浏览中保存选择；重复、超时、不可读大小或超过 256 KiB 的原图会回退到各自的本地封面，16:9 占位保持不变。第三方图库不保证绝对无重复；普通明确封面地址继续优先，不填 `cover` 时使用本地封面。
+三篇文章分别显式使用 `/images/covers/grove.svg`、`writing.svg`、`cloud.svg`；这三张原创占位图风格统一，正式二次元插画等待站主补充有权使用的素材。`cover` 字段优先，不填时按 slug 固定映射到本地池，加载失败也使用本地兜底。组件不再请求随机接口或执行 JSON、fetch、HEAD 探测；16:9 比例和原生懒加载保持不变。
 
-随机封面不会直接输出为 `og:image`。稳定分享图使用本地 `defaultShareImage`，在正式域名未知时不编造图片绝对地址。后续需要更清晰的分享图时，先准备自己有权使用的稳定本地图片，再修改此字段，不更换字体或背景系统。
+分享图应使用稳定的 `cover`；本地图片需要正式域名后才输出 OG 绝对地址，域名未知时不会编造地址。原 `defaultShareImage` 配置保持不变；更清晰的正式图片由站主准备后填写到 `cover`，本次不调整 SEO 行为、字体或背景系统。
 
 ### 正文图片与未来图床
 
 现有 Markdown 渲染器与 `cover` 均已支持本地图片和完整 HTTPS URL，无需新增图床后台或修改文章系统。稳定封面、图标及重要资源适合放在 `docs/public/images/`；保留已有本地 WebP，不强制迁移，也不自动上传第三方服务。
 
 ```markdown
-![图片说明](/images/example.webp)
+![图片说明](/images/posts/example.webp)
 ![图片说明](https://img.example.com/posts/example.webp)
 ```
 
-第一个地址对应发布产物的 `/images/example.webp`，源文件是 `docs/public/images/example.webp`；第二个是未来自建图床的写法，`img.example.com` 仅为示例域名，不作为真实配置。封面可同样填写 `cover: "https://img.example.com/posts/example.webp"`。
+第一个地址对应发布产物的 `/images/posts/example.webp`，源文件是 `docs/public/images/posts/example.webp`；第二个是未来自建图床的写法，`img.example.com` 仅为示例域名，不作为真实配置。封面可写成 `cover: "/images/covers/example.webp"` 或 `cover: "https://img.example.com/covers/example.webp"`。
 
-页面相对地址 `../images/example.webp` 在 `/post/<slug>.html` 下也会指向 `/images/example.webp`；解析依据是浏览器页面 URL，不是 `.md` 源文件目录。推荐根相对路径 `/images/`，不要使用本机磁盘路径。部署时保留整个 `images/` 目录，`img/` 仍只用于原有随机背景池。
+页面相对地址 `../images/posts/example.webp` 在 `/post/<slug>.html` 下也会指向 `/images/posts/example.webp`；解析依据是浏览器页面 URL，不是 `.md` 源文件目录。推荐根相对路径 `/images/`，不要使用本机磁盘路径。部署时保留整个 `images/` 目录，`img/` 仍只用于原有随机背景池。
 
-静态服务器可以正常引用远程图床，图片由浏览器单独请求；外部服务可能受网络、HTTPS 证书、防盗链和服务可用性影响。SEO 分享图应使用稳定 URL。自建图床准备好之后，只需按实际地址填写 `cover` 或标准 Markdown 图片语法，不需要先迁移本地重要资源。
+站点基础资源、封面优先本地；普通插图可以本地或外链。静态服务器可以正常引用未来自建图床，图片由浏览器单独请求；外部服务可能受网络、HTTPS 证书、防盗链、可用性及跨域策略影响，本组件不额外探测。过大图片请自行压缩，推荐 WebP；SEO 分享图使用稳定 URL。填写实际 `cover` 或标准 Markdown 图片地址即可，不强制迁移重要资源。
 
 ### 正式域名与 SEO
 
@@ -280,7 +280,7 @@ Cloudflare 默认不缓存 HTML 或 JSON，缓存规则可能改变这一行为�
 1. 首页只显示当前有效文章，点击三篇新文章都能阅读。
 2. 把三篇 `/post/*.html` 地址分别直接粘贴到新窗口并刷新；不存在地址返回真实 404。
 3. 分类是三类，各一篇；初始标签共有 11 个不同名称，随着内容变化应以实际 Frontmatter 重新统计；归档日期为 `2026-10-25`。
-4. 封面请求新接口，阻断接口时仍有本地兜底和比例占位；随机背景每次完整打开只选一张，站内切换不重选。
+4. 首页三篇封面不同，切页与刷新地址不变；失败时本地兜底正常，Network 没有随机封面接口或跨域探测请求。随机背景每次完整打开只选一张，站内切换不重选。
 5. 在 Network 确认字体 200/304、类型正确、没有字体 404；不修改现有 Unicode 分包。
 6. 桌面 Live2D 在冷访问、刷新与站内切换下正常，手机不下载隐藏的模型；贴图完全本地化仍须先确认许可，不自行镜像。
 7. 查看页面原始 HTML，确认每篇 title、description、OG 标题/描述/type 独立且不重复；正文也应存在于 SSR HTML。

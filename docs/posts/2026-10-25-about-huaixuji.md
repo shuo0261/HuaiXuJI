@@ -3,7 +3,7 @@ title: "槐序霁：一个简约的二次元个人博客"
 date: "2026-10-25"
 category: "项目文档"
 tags: ["槐序霁", "VitePress", "Vue3", "开源项目"]
-cover: "https://t.alcy.cc/ysz"
+cover: "/images/covers/grove.svg"
 coverTitle: "项目介绍"
 description: "介绍槐序霁的设计来源、技术栈、现有功能与目录结构，并说明如何使用本地 Markdown 写作、调整主题和构建静态站点。"
 hot: 1
@@ -102,11 +102,11 @@ npm run docs:preview
 | 换随机背景 | 将有权使用的 JPG、PNG、WebP、AVIF 放入 `docs/public/img/`，再启动或构建；单张不超过 3 MB，优先 300–800 KB |
 | 修改名称、简介 | `docs/.vitepress/site.js` 的 `title`、`subtitle`、`description` |
 | 调整页面文案与资料 | `docs/.vitepress/theme/config.js` 的页面 `*Opts.qoute`、`about`、`aboutOpts`、`friends` |
-| 调整默认封面 | 同一配置的 `defaultCover`，当前指向用户指定的原神随机图片接口 |
+| 调整封面 | 文章 `cover` 优先；`article-covers.js` 按 slug 固定映射到 `docs/public/images/covers/` 本地默认池 |
 | 配置 SEO 域名 | `docs/.vitepress/site.js` 的 `url`，填写真实站点根 URL，随后重新构建 |
 | 设置备案展示 | `theme/config.js` 的 `footer.icp`、`footer.police`，分别填写真实资料并开启 |
 
-封面与背景是两条独立链路。封面接口失败时使用本站已有图标兜底，不会替换随机背景池。随机封面也不会直接当作永久分享图：SEO 使用稳定的本地 `defaultShareImage`，域名未确定时省略无法生成的 OG 图片绝对地址。
+封面与背景是两条独立链路。三篇文章使用不同的本地原创占位图，正式封面素材待站主补充；图片失败时用本地默认图兜底，不请求随机接口或执行跨域探测。普通封面仍支持稳定 HTTPS 地址，不需要提前迁移到图床，也不会替换随机背景池。SEO 分享图建议使用稳定图片，正式域名未确定时省略无法生成的本地 OG 图片绝对地址。
 
 更新完成后依次检查文章、分类、标签、归档，执行生产构建，再把完整产物交给已有发布流程。发布新版本时不要把新旧目录简单叠加，以免已删除的旧 HTML 继续留在线上；先保留旧版本，再使用新的完整发布目录。
 

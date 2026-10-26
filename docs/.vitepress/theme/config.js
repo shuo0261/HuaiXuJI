@@ -4,7 +4,8 @@
  */
 import site, { getSiteUrl } from '../site.js'
 
-const defaultCover = 'https://t.alcy.cc/ysz'
+// 分类等既有封面调用统一使用本地默认图，不再通过随机接口获取站点基础图片。
+const defaultCover = '/images/covers/grove.svg'
 
 export default {
   /**
@@ -98,7 +99,7 @@ export default {
    * 文章默认图
    */
   defaultCover,
-  // SEO 构建阶段为随机封面选稳定分享图；Cover 加载失败也复用本站已有图标，不增加远程兜底依赖。
+  // SEO 的稳定分享图配置保持不变；文章加载失败时由 Cover 选取本地兜底图。
   defaultShareImage: '/assets/apple-touch-icon.png',
 
   /**

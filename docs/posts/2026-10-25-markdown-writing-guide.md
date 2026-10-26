@@ -3,7 +3,7 @@ title: "Markdown 写作指南：从基础语法到 SEO 优化"
 date: "2026-10-25"
 category: "使用教程"
 tags: ["Markdown", "写作教程", "SEO", "槐序霁"]
-cover: "https://t.alcy.cc/ysz"
+cover: "/images/covers/writing.svg"
 coverTitle: "写作教程"
 description: "依据槐序霁当前的 gray-matter 与 markdown-it 实现，讲解文章命名、Frontmatter、常用 Markdown、SEO 描述、预览发布和常见错误，并提供可复制模板。"
 hot: 1
@@ -36,7 +36,7 @@ title: "我的第一篇写作记录"
 date: "2026-10-25"
 category: "使用教程"
 tags: ["Markdown", "笔记"]
-cover: "https://t.alcy.cc/ysz"
+cover: "/images/covers/writing.svg"
 coverTitle: "写作手记"
 description: "记录创建本地文章、检查 Markdown 效果和构建发布的完整过程。"
 hot: 1
@@ -51,7 +51,7 @@ hot: 1
 | `date` | 显示与排序使用的发布日期，建议带引号的 `YYYY-MM-DD` |
 | `category` | 一个分类字符串；新分类自动聚合，不写成数组或 `categories` |
 | `tags` | 字符串数组；同一个标签保持相同大小写与用词 |
-| `cover` | 封面地址；不填回退主题默认图，当前默认为第三方随机图片接口 |
+| `cover` | 本地或完整 HTTPS 封面地址；显式值优先，不填按 slug 稳定选择本地默认图 |
 | `coverTitle` | 标题区域的独立小副标，不填留空 |
 | `description` | 列表摘要、meta description 和 OG 描述，正式文章显式填写 |
 | `hot` | 静态展示数字，通常为 1，不是实际阅读量，0 会回退为 1 |
@@ -267,7 +267,7 @@ title: "我的第一篇写作记录"
 date: "2026-10-25"
 category: "使用教程"
 tags: ["Markdown", "笔记"]
-cover: "https://t.alcy.cc/ysz"
+cover: "/images/covers/writing.svg"
 coverTitle: "写作手记"
 description: "说明本文解决什么问题，以及读者可以完成哪些操作。"
 hot: 1

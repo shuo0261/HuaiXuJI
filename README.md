@@ -1,6 +1,6 @@
 # 槐序霁 · Aurora 风格 VitePress 博客
 
-基于 [VitePress](https://vitepress.dev/) 复刻 [Aurora / 蝉时雨](https://github.com/chanshiyucx/aurora) 视觉风格的静态博客。组件从 Vue 2 Options API 改为 Vue 3 `<script setup>`，数据源由 GitHub Issues 迁移为本地 Markdown，无后端数据库；随机封面和部分装饰素材仍使用第三方资源，封面有独立本地兜底。
+基于 [VitePress](https://vitepress.dev/) 复刻 [Aurora / 蝉时雨](https://github.com/chanshiyucx/aurora) 视觉风格的静态博客。组件从 Vue 2 Options API 改为 Vue 3 `<script setup>`，数据源由 GitHub Issues 迁移为本地 Markdown，无后端数据库；封面优先本地，部分装饰素材仍使用第三方资源。
 
 当前改版仓库：[shuo0261/HuaiXuJI](https://github.com/shuo0261/HuaiXuJI)。原作者仓库仍为 [chanshiyucx/aurora](https://github.com/chanshiyucx/aurora)。
 
@@ -25,7 +25,7 @@
 - 本地 Markdown 写作，首页、归档、分类与标签自动聚合。
 - 文章独立 SEO 与 SSR 正文，二级、三级标题自动目录；桌面侧栏、手机折叠入口。
 - Maple Mono NF CN 本地 WOFF2 分包、浅色毛玻璃卡片与响应式阅读布局。
-- 本地随机背景池；文章封面独立选择，同次浏览保持稳定，失败回退本地图。
+- 本地随机背景池；文章封面显式指定或按 slug 固定分配，失败回退本地图。
 - 桌面 Live2D 延迟加载及本地互动文案，手机跳过模型下载；部分贴图仍使用原远程地址。
 - 关于本站、个人寄语与资料、朱自清《匆匆》全文，以及原主题友链。
 
@@ -90,7 +90,7 @@ title: 文章标题 # 必填
 date: 2026-01-10 # 必填，发布时间（显示与排序均基于此）
 category: 前端 # 可选，分类（分类页自动聚合）
 tags: [Vue, 笔记] # 可选，标签（标签页自动聚合）
-cover: "/images/posts/my-note/cover.webp" # 可选，也支持完整 HTTPS 地址；先放入实际图片
+cover: "/images/covers/example.webp" # 可选，也支持完整 HTTPS 地址；先放入实际图片
 coverTitle: 封面副标 # 可选，标题条右侧的小字副标，不填则不显示
 description: 摘要文字 # 可选，列表卡片摘要，不填取正文首段
 hot: 99 # 可选，热度数值，默认 1
@@ -114,18 +114,25 @@ hot: 99 # 可选，热度数值，默认 1
 
 ## 图片管理
 
-本地图片放在 `docs/public/images/`，适合稳定封面、图标和重要资源；已有 WebP 可以继续使用，无需迁移到图床。普通正文使用标准 Markdown：
+站点基础资源、封面和重要图片优先本地，静态博客可正常构建和发布这些资源，已有 WebP 无需迁移。封面放在 `docs/public/images/covers/`，普通插图可放在 `docs/public/images/posts/`，正文使用标准 Markdown：
 
 ```markdown
-![图片说明](/images/example.webp)
+![图片说明](/images/posts/example.webp)
 ![图片说明](https://img.example.com/posts/example.webp)
 ```
 
-`/images/example.webp` 是站点根相对路径，对应 `docs/public/images/example.webp`。页面相对路径 `../images/example.webp` 在 `/post/<slug>.html` 下也指向 `/images/example.webp`；它相对的是发布后的页面，不能按 Markdown 源文件的磁盘位置推断。优先使用 `/images/` 写法。
+`/images/posts/example.webp` 是站点根相对路径，对应 `docs/public/images/posts/example.webp`。页面相对路径 `../images/posts/example.webp` 在 `/post/<slug>.html` 下也指向这个地址；它相对的是发布后的页面，不能按 Markdown 源文件的磁盘位置推断。优先使用 `/images/` 写法。
 
-`cover` 支持同样的本地路径和完整 HTTPS URL，普通显式封面优先；省略时按文章顺序使用本地封面。既有随机接口封面通过一次多图请求独立选择，重复、超时或超过大小预算时回退到各自本地图，详见 [封面说明](docs/public/images/covers/README.txt)。
+`cover` 优先级最高，支持本地路径和完整 HTTPS URL：
 
-完整 HTTPS URL 可用于未来的自建图床，静态部署不会妨碍浏览器访问远程图片。外链可能受网络、证书、防盗链和服务可用性影响；SEO 分享图使用稳定 URL，不使用随机图片接口。上面的 `img.example.com` 仅为文档示例，不是项目真实配置。项目不自动上传图片，也不改变 `docs/public/img/` 随机背景池。
+```yaml
+cover: "/images/covers/example.webp"
+# 或者：cover: "https://img.example.com/covers/example.webp"
+```
+
+省略时按 slug 稳定映射到少量本地默认图，不受文章排序、刷新和站内切页影响。当前三篇文章分别绑定 `grove.svg`、`writing.svg`、`cloud.svg`；它们是已有原创占位图，正式二次元插画待站主提供有权使用的素材后替换。组件只使用实际图片的加载/失败事件，已移除随机接口、JSON、fetch 和 HEAD 探测，详见 [封面说明](docs/public/images/covers/README.txt)。
+
+普通文章插图可使用本地图片或外部图床，未来可将外部地址换成自建图床，静态部署不会妨碍远程加载。外链可能受网络、证书、防盗链、服务可用性及跨域策略影响；组件不为此额外发起探测请求。图片过大时按显示尺寸自行压缩，推荐 WebP；SEO 分享图使用稳定 URL，不使用随机接口。上面的 `img.example.com` 仅为文档示例，不是真实配置。项目不自动上传图片，也不改变 `docs/public/img/` 随机背景池。
 
 ## 怎么修改 / 定制
 

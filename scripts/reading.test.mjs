@@ -3,7 +3,7 @@ import assert from 'node:assert/strict'
 import fs from 'node:fs'
 import MarkdownIt from 'markdown-it'
 import { articleHeadings, assignHeadingIds } from '../docs/.vitepress/theme/article-headings.js'
-import { coverFallback, isRandomCover } from '../docs/.vitepress/theme/article-covers.js'
+import { coverFallback, localCovers, resolveArticleCover } from '../docs/.vitepress/theme/article-covers.js'
 
 // Node 原生 JSON 导入与 Vite 的处理不同；测试注入同一份 JSON，避免为运行测试改动浏览器模块的导入方式。
 const messagesSource = fs.readFileSync(new URL('../docs/.vitepress/theme/live2d/messages.js', import.meta.url), 'utf8')
@@ -24,32 +24,35 @@ test('目录与渲染锚点一致，处理中文、格式、重复、保留字�
   assert.equal(articleHeadings('## 仅一节').length, 1)
 })
 
-test('普通显式封面和带自定义参数的地址保持优先，本地三张封面不同', () => {
-  assert.equal(isRandomCover('https://t.alcy.cc/ysz'), true)
-  assert.equal(isRandomCover('https://t.alcy.cc/ysz?fixed=1'), false)
-  assert.equal(isRandomCover('/images/my-cover.webp'), false)
-  assert.equal(new Set([0, 1, 2].map(coverFallback)).size, 3)
+test('显式本地/HTTPS封面优先，默认按slug稳定映射，不随文章顺序变化', () => {
+  const slugs = ['about-huaixuji', 'markdown-writing-guide', 'huaixuji-deployment-guide']
+  const defaults = slugs.map(coverFallback)
+  assert.equal(new Set(defaults).size, 3)
+  assert.ok(defaults.every(src => localCovers.includes(src)))
+  assert.deepEqual([...slugs].reverse().map(coverFallback).reverse(), defaults)
+  for (const src of ['/images/my-cover.webp', 'https://img.example.com/covers/a.webp?v=1']) {
+    assert.equal(resolveArticleCover(src, slugs[0]), src)
+  }
+  assert.equal(resolveArticleCover('', slugs[0]), defaults[0])
 })
 
-test('随机接口一次取池，重复和超预算回退；同次浏览复用选择，不使用时间戳', async () => {
-  const { resolveArticleCover, cachedArticleCover } = await import('../docs/.vitepress/theme/article-covers.js?test-pool')
+test('封面解析不发fetch/HEAD，三篇正式文章绑定不同且存在的本地封面', async () => {
   const original = globalThis.fetch
   const calls = []
-  globalThis.fetch = async (url, options) => {
-    calls.push({ url, method: options.method || 'GET' })
-    if (url.includes('/json?')) return new Response(JSON.stringify({ links: ['https://images.test/small.webp', 'https://images.test/small.webp', 'https://images.test/large.webp'] }))
-    return new Response(null, { headers: { 'content-type': 'image/webp', 'content-length': url.includes('large') ? '3000000' : '1024' } })
-  }
+  globalThis.fetch = async (...args) => { calls.push(args); throw new Error('封面不能进行跨域探测') }
   try {
-    const url = 'https://t.alcy.cc/ysz'
-    const covers = await Promise.all([0, 1, 2].map(index => resolveArticleCover(url, `post-${index}`, index)))
-    assert.deepEqual(covers, ['https://images.test/small.webp', coverFallback(1), coverFallback(2)])
-    assert.equal(await resolveArticleCover(url, 'post-0', 0), covers[0])
-    assert.equal(cachedArticleCover(url, 'post-0'), covers[0])
-    assert.equal(await resolveArticleCover('/my.webp', 'explicit', 0), '/my.webp')
-    assert.equal(calls.filter(call => call.method === 'GET').length, 1)
-    assert.equal(calls.filter(call => call.method === 'HEAD').length, 2)
-    assert.equal(calls[0].url, 'https://t.alcy.cc/json?ys=3')
+    for (const src of ['', '/images/my-cover.webp', 'https://img.example.com/covers/a.webp']) {
+      assert.equal(await resolveArticleCover(src, 'future-post'), src || coverFallback('future-post'))
+    }
+    const covers = ['about-huaixuji', 'markdown-writing-guide', 'huaixuji-deployment-guide'].map(slug => {
+      const raw = fs.readFileSync(new URL(`../docs/posts/2026-10-25-${slug}.md`, import.meta.url), 'utf8')
+      const cover = raw.match(/^cover: "([^"]+)"/m)?.[1]
+      assert.ok(cover?.startsWith('/images/covers/'), `${slug} 应使用本地封面`)
+      assert.ok(fs.existsSync(new URL(`../docs/public${cover}`, import.meta.url)))
+      return cover
+    })
+    assert.equal(new Set(covers).size, 3)
+    assert.equal(calls.length, 0)
   } finally { globalThis.fetch = original }
 })
 

@@ -44,9 +44,9 @@ const formatPost = (number, raw, coverIndex) => {
     // 原版语义：标题条右侧 span 是独立副标（如"Promise | 4412字"字数标签），
     // 不回退为标题本身，否则 h3 与 span 渲染同一句话造成"文字重复"
     title: data.coverTitle || '',
-    // 显式封面优先；未填写时使用单篇固定的本地封面，SSR 和客户端按相同文件顺序选择。
-    src: data.cover || coverFallback(coverIndex),
-    fallback: coverFallback(coverIndex),
+    // 索引构建时保留显式地址；默认与失败兜底按 slug 固定分配，文章重排不会让图片变化。
+    src: data.cover || coverFallback(number),
+    fallback: coverFallback(number),
     key: number,
     index: coverIndex,
   }
