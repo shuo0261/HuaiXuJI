@@ -1,4 +1,28 @@
 /* Post 样式，移植自 aurora-master/src/views/Post/index.scss（SCSS → CSS） */
+/* 相邻文章随正文 SSR 输出，复用卡片变量；仅移动端改为单栏，不用客户端测量来切换结构。 */
+#post .post-navigation {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  padding: 0 24px 24px;
+}
+#post .post-navigation a {
+  min-width: 0;
+  padding: 14px 16px;
+  border: 1px solid var(--surface-border);
+  border-radius: var(--card-radius);
+  background: var(--bg-white-dim);
+  box-shadow: var(--card-shadow-light);
+  overflow-wrap: anywhere;
+}
+#post .post-navigation a:hover { background: var(--bg-white-deep); }
+#post .post-navigation span { color: var(--text-muted); font-size: var(--font-size-small); }
+#post .post-navigation strong { display: block; margin-top: 6px; color: var(--heading-color); }
+#post .post-navigation .next { grid-column: 2; }
+@media (max-width: 767px) {
+  #post .post-navigation { grid-template-columns: minmax(0, 1fr); padding: 0 16px 16px; }
+  #post .post-navigation .next { grid-column: auto; }
+}
 #post article {
   position: relative;
   overflow: unset;

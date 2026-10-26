@@ -38,6 +38,16 @@
           <ArticleToc :items="toc" />
           <MarkDown :content="post.body" target="#post" />
         </div>
+        <nav v-if="adjacentPosts.previous || adjacentPosts.next" class="post-navigation" aria-label="文章导航">
+          <RouterLink v-if="adjacentPosts.previous" class="previous" rel="prev" :to="{ name: 'post', params: { number: adjacentPosts.previous.number } }">
+            <span>上一篇</span>
+            <strong>{{ adjacentPosts.previous.title }}</strong>
+          </RouterLink>
+          <RouterLink v-if="adjacentPosts.next" class="next" rel="next" :to="{ name: 'post', params: { number: adjacentPosts.next.number } }">
+            <span>下一篇</span>
+            <strong>{{ adjacentPosts.next.title }}</strong>
+          </RouterLink>
+        </nav>
       </article>
       <Loading v-else />
     </Transition>
@@ -70,8 +80,9 @@ import MarkDown from '../components/MarkDown.vue'
 import Loading from '../components/Loading.vue'
 import Cover from '../components/Cover.vue'
 import ArticleToc from '../components/ArticleToc.vue'
+import RouterLink from '../components/RouterLink.vue'
 import { articleHeadings } from '../article-headings.js'
-import { queryPost } from '../posts'
+import { queryPost, queryPosts, queryArchivesCount } from '../posts'
 import { progressStart, progressFinish } from '../store'
 import './Post.css'
 
@@ -86,6 +97,16 @@ const initComment = ref(false)
 const postNumber = computed(() => {
   const match = String(route.path || '').match(/\/post\/([^/.]+)/)
   return match ? match[1] : ''
+})
+
+// 文章详情展示阶段复用首页的日期倒序索引（同日也沿用现有顺序），不另行排序或维护链接。
+// 上一篇指较旧文章 index+1，下一篇指较新文章 index-1；边界和找不到当前文章时不生成虚假方向。
+const adjacentPosts = computed(() => {
+  // 分页接口需要有限的 pageSize；使用实际总数，避免 0 * Infinity 导致 NaN 起点而返回空列表。
+  const posts = queryPosts({ pageSize: queryArchivesCount() })
+  const index = posts.findIndex((item) => item.number === post.value?.number)
+  if (index < 0) return { previous: null, next: null }
+  return { previous: posts[index + 1] || null, next: posts[index - 1] || null }
 })
 
 // 返回上一级（有历史则后退，直接打开文章页时回首页）
