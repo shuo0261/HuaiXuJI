@@ -155,6 +155,10 @@ cover: '/images/covers/example.webp'
 
 构建产物是纯静态文件（`docs/.vitepress/dist/`），任何静态托管都能用。
 
+自定义 404 使用构建生成的 `404.html`；`npm run docs:preview` 会为不存在的地址返回该页面及 HTTP 404。正式静态服务器也须保留 404 状态，不能把未知地址统一重写为首页并返回 200。站内跳转没有新的文档响应，状态码以直链或刷新请求为准。
+
+Nginx 可在现有站点配置中使用 `try_files $uri $uri.html $uri/ =404;`，并配置 `error_page 404 /404.html;`（不要写成 `=200`，见[官方指令说明](https://nginx.org/en/docs/http/ngx_http_core_module.html#error_page)）。IIS 在现有 HTTP 错误页设置中选择将静态文件内容插入 404 响应，映射构建产物的 `404.html`，不要使用 302 重定向；文件路径按服务器实际站点根目录填写，见[官方错误页设置](https://learn.microsoft.com/en-us/iis/configuration/system.webserver/httperrors/error)。这里只记录部署要求，不修改服务器或生成虚构路径。
+
 完整步骤见 [IIS、Nginx 与 Docker 部署指南](docs/posts/2026-10-25-huaixuji-deployment-guide.md)，其中也说明 HTTPS、Cloudflare 缓存及图片路径。
 
 ### GitHub Pages（GitHub Actions 自动化）

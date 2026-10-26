@@ -3,7 +3,7 @@
   <div id="bg" :style="backgroundStyle" aria-hidden="true"></div>
   <VueProgress />
   <Transition name="header-transform" mode="out-in">
-    <Header v-show="showHeader" :class="{ 'post-page-header': isPostPage }" />
+    <Header v-show="showHeader || page.isNotFound" :class="{ 'post-page-header': isPostPage }" />
   </Transition>
   <main class="main">
     <!-- 原 Vue2 版此处为 <Transition mode="out-in">；Vue 3.5 下 out-in 包裹动态组件
@@ -26,7 +26,7 @@
  * 改为基于 VitePress route.path 的视图分发；Inspiration/Book 页面未列入需求范围
  */
 import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
-import { useRoute, withBase } from 'vitepress'
+import { useData, useRoute, withBase } from 'vitepress'
 import backgroundImages from 'virtual:background-images'
 import Header from './components/Header.vue'
 import Footer from './components/Footer.vue'
@@ -40,12 +40,14 @@ import Category from './views/Category.vue'
 import Tag from './views/Tag.vue'
 import Friend from './views/Friend.vue'
 import About from './views/About.vue'
+import NotFound from './views/NotFound.vue'
 import { store, updateMobileState, progressStart, progressFinish, queuePageTips } from './store'
 
 const route = useRoute()
+const { page } = useData()
 
 // Layout 在服务端与浏览器首帧都能确定文章路由；尺寸仍交给 CSS 判断，避免依赖挂载后的手机状态。
-const isPostPage = computed(() => /^\/post\//.test(String(route.path || '')))
+const isPostPage = computed(() => !page.value.isNotFound && /^\/post\//.test(String(route.path || '')))
 const showHeader = ref(true)
 const backgroundStyle = ref({})
 let lastResizeTimer = ''
@@ -53,6 +55,8 @@ let lastResizeAt = new Date()
 
 // 视图分发（对应原 router.js 路由表）
 const currentView = computed(() => {
+  // VitePress 在 SSR 404 和站内找不到页面时都提供此标记；先分流，避免未知路径误显示首页或文章加载框。
+  if (page.value.isNotFound) return NotFound
   try {
     const path = String(route.path || '').replace(/\.html$/, '')
     if (/^\/post\//.test(path)) return Post
