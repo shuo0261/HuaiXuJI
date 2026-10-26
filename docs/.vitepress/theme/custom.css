@@ -1215,16 +1215,19 @@ td.hljs-ln-numbers {
   padding-left: 12px;
 }
 .markdown pre .code-copy {
-  opacity: 0;
+  /* 正文渲染时预留的代码标题栏：按钮常显，触屏和键盘用户不依赖 hover 才能发现。 */
+  opacity: 1;
   position: absolute;
   top: 4px;
-  right: 0;
-  height: 36px;
-  width: 36px;
-  font-size: var(--font-size-large);
-  line-height: 32px;
+  right: 8px;
+  height: 28px;
+  min-width: 60px;
+  padding: 0 8px;
+  background: transparent;
+  font-size: var(--font-size-small);
+  line-height: 28px;
   text-align: center;
-  color: #888;
+  color: #bbb;
   transition: all ease 0.3s;
 }
 .markdown pre .code-copy:hover {

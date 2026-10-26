@@ -1,12 +1,12 @@
 <template>
-  <div class="markdown" v-html="html"></div>
+  <div class="markdown" v-html="html" @click="copyCode"></div>
 </template>
 
 <script setup>
 /**
  * MarkDown，移植自 aurora-master/src/components/MarkDown/index.vue
  * Vue2 Options API → Vue3 <script setup>，模板原样保留
- * 剥离依赖：marked → markdown-it（需求指定）；移除 zooming / clipboard / katex / 自带 highlight 库
+ * 剥离依赖：marked → markdown-it（需求指定）；复制使用浏览器 Clipboard API，不恢复 clipboard 插件
  * 自定义 renderer 保持原 HTML 输出结构（标题图标、img-box 图片容器、table-wrapper、代码复制按钮）
  */
 import { ref, watch, onBeforeUnmount, nextTick } from 'vue'
@@ -26,6 +26,45 @@ const props = defineProps({
 })
 
 const html = ref('')
+const copyTimers = new Map()
+let disposed = false
+
+// 文章正文的 SSR 与客户端共用此输出；围栏和缩进代码块都保留原始文本，按钮不混入 code 节点。
+function renderCode(code, lang = '') {
+  const button = props.target === '#post'
+    ? '<button type="button" class="code-copy" aria-label="复制代码"><span class="copy-label" role="status" aria-live="polite">复制</span></button>'
+    : ''
+  const language = lang ? ` class="hljs language-${md.utils.escapeHtml(lang)}"` : ''
+  return `<pre class="hljs">${button}<code${language}>${md.utils.escapeHtml(code)}</code></pre>`
+}
+
+// v-html 里的原生按钮由根节点代理点击（键盘激活也产生 click）；只读取 code.textContent，避免复制 HTML 或提示文案。
+async function copyCode(event) {
+  const button = event.target?.closest?.('button.code-copy')
+  if (!button || !event.currentTarget.contains(button) || button.dataset.copying) return
+  const code = button.closest('pre')?.querySelector('code')
+  if (!code) return
+  clearTimeout(copyTimers.get(button))
+  button.dataset.copying = 'true'
+  let message
+  try {
+    if (!navigator.clipboard?.writeText) throw new Error('Clipboard API unavailable')
+    await navigator.clipboard.writeText(code.textContent)
+    message = '已复制'
+  } catch {
+    // 权限拒绝、非安全上下文或系统复制失败都明确反馈失败，不用成功提示掩盖。
+    message = '复制失败'
+  } finally {
+    delete button.dataset.copying
+  }
+  if (disposed || !button.isConnected) return
+  const label = button.querySelector('.copy-label')
+  label.textContent = message
+  copyTimers.set(button, setTimeout(() => {
+    label.textContent = '复制'
+    copyTimers.delete(button)
+  }, 2000))
+}
 
 // markdown-it 实例：html 允许（原文兼容），高亮用简化实现（保持 hljs 类名输出）
 let IMG_ID = 0
@@ -33,14 +72,9 @@ let IMG_ID = 0
 const md = new MarkdownIt({
   html: true,
   linkify: false,
-  highlight: (code, lang) => {
-    // 保持与原主题相同的 hljs 类名结构；具体配色由 code.scss 提供
-    if (lang) {
-      return `<pre class="hljs"><code class="hljs language-${lang}">${md.utils.escapeHtml(code)}</code></pre>`
-    }
-    return `<pre class="hljs"><code>${md.utils.escapeHtml(code)}</code></pre>`
-  },
+  highlight: renderCode,
 })
+md.renderer.rules.code_block = (tokens, idx) => renderCode(tokens[idx].content)
 
 // 标题：注入 Fontello 图标（原 renderer.heading：图标在文字前）
 const headingIcon = (level) => ['gift', 'pagelines', 'pilcrow'][level - 2] || 'pilcrow'
@@ -102,7 +136,7 @@ const renderMarkdown = () => {
   if (!props.target) return
   if (typeof document === 'undefined') return
   nextTick(() => {
-    // 原实现中的 hljs 行号 / zooming 灯箱 / 代码复制剥离，图片直接展示
+    // 图片直接展示；代码复制由根节点事件代理处理，无需逐次查找和绑定按钮。
     document.querySelectorAll('.markdown .img-zoomable').forEach((img) => {
       img.style.opacity = 1
     })
@@ -111,5 +145,9 @@ const renderMarkdown = () => {
 
 watch(() => props.content, renderMarkdown, { immediate: true })
 
-onBeforeUnmount(() => {})
+onBeforeUnmount(() => {
+  disposed = true
+  copyTimers.forEach(clearTimeout)
+  copyTimers.clear()
+})
 </script>
