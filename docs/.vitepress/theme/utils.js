@@ -68,6 +68,23 @@ export const parseTime = (time, format = '{y}-{m}-{d} {h}:{i}:{s}') => {
 }
 
 /**
+ * posts.formatPost 在解析 Frontmatter 时调用，只给详情页提供可选更新时间，不参与发布日期排序。
+ * 兼容 YAML 日期对象并使用 UTC 日历日，避免 SSR/浏览器时区差异；缺省、格式错误和不存在的日期都省略展示。
+ */
+export const formatUpdatedDate = (value, frontmatter) => {
+  let text = value
+  if (value instanceof Date) {
+    if (!Number.isFinite(value.getTime())) return ''
+    // YAML 会将未加引号的 2 月 30 日滚到 3 月；解析文章时回读日期字面值，不能把错误日期当作有效修订日。
+    text = frontmatter === undefined ? value.toISOString().slice(0, 10)
+      : frontmatter.match(/^updated[ \t]*:[ \t]*(\d{4}-\d{2}-\d{2})[ \t]*(?:#.*)?\r?$/m)?.[1] || ''
+  }
+  if (typeof text !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(text)) return ''
+  const date = new Date(`${text}T00:00:00Z`)
+  return Number.isFinite(date.getTime()) && date.toISOString().slice(0, 10) === text ? text : ''
+}
+
+/**
  * 相对时间（移植 timeago.js zh_CN 语料）
  */
 export const timeago = (time) => {

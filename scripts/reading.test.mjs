@@ -2,8 +2,26 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import fs from 'node:fs'
 import MarkdownIt from 'markdown-it'
+import matter from 'gray-matter'
 import { articleHeadings, assignHeadingIds } from '../docs/.vitepress/theme/article-headings.js'
 import { coverFallback, localCovers, resolveArticleCover } from '../docs/.vitepress/theme/article-covers.js'
+import * as dateUtils from '../docs/.vitepress/theme/utils.js'
+
+test('可选更新时间只接受有效日期，兼容 YAML Date；缺省及无效值不抛异常且不产生展示值', () => {
+  assert.equal(typeof dateUtils.formatUpdatedDate, 'function')
+  const format = dateUtils.formatUpdatedDate
+  for (const date of ['2026-10-26', '2024-02-29', '1970-01-01']) assert.equal(format(date), date)
+  assert.equal(format(new Date('2026-10-26T00:00:00Z')), '2026-10-26')
+  for (const [literal, expected] of [['2026-10-26', '2026-10-26'], ['2026-02-30', ''], ['2026-10-26T00:00:00Z', '']]) {
+    const raw = `---\nupdated: ${literal}\n---\n`
+    matter(raw) // 模拟构建阶段已有解析缓存，文章索引仍需拿到原始日期字面值。
+    const parsed = matter(raw, {})
+    assert.equal(format(parsed.data.updated, parsed.matter), expected)
+  }
+  for (const value of [undefined, null, '', 'wrong', '2026-2-3', '2026-02-29', '2026-04-31', '2026-13-01', '2026-10-26T00:00:00Z', 123, true, [], {}, new Date(NaN)]) {
+    assert.equal(format(value), '', String(value))
+  }
+})
 
 // Node 原生 JSON 导入与 Vite 的处理不同；测试注入同一份 JSON，避免为运行测试改动浏览器模块的导入方式。
 const messagesSource = fs.readFileSync(new URL('../docs/.vitepress/theme/live2d/messages.js', import.meta.url), 'utf8')

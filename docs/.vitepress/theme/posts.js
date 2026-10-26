@@ -4,7 +4,7 @@
  * 输出与原 Aurora 格式对齐的文章对象（id / number / title / labels / milestone / cover / created_at / body / description）
  */
 import matter from 'gray-matter'
-import { parseTime } from './utils'
+import { parseTime, formatUpdatedDate } from './utils'
 import { store, setTotalCount } from './store'
 import config from './config'
 import { coverFallback } from './article-covers.js'
@@ -24,6 +24,7 @@ const rawFiles = {
  * front-matter 约定：
  *   title: 文章标题（必填）
  *   date: 发布时间（必填，支持 Date / 'YYYY-MM-DD'）
+ *   updated: 最后更新时间（可选，'YYYY-MM-DD'，无效值不展示，不影响排序）
  *   category: 分类（对应原 milestone，可选）
  *   tags: 标签数组（可选）
  *   cover: 封面图地址（可选，未填写时选单篇固定的本地封面）
@@ -32,7 +33,9 @@ const rawFiles = {
  *   hot: 热度数值（可选，默认 1）
  */
 const formatPost = (number, raw, coverIndex) => {
-  const { data, content } = matter(raw)
+  // SEO 等构建步骤可能已解析过同一文章；gray-matter 的缓存副本会丢失非枚举的原始 Frontmatter。
+  // 当前索引本身只构建一次，这里用空选项保留原文供 updated 校验，避免 SSR 将非法 YAML 日期误当有效值。
+  const { data, content, matter: frontmatter } = matter(raw, {})
   const title = String(data.title || '未命名文章')
   const date = data.date ? new Date(data.date) : new Date()
 
@@ -60,6 +63,7 @@ const formatPost = (number, raw, coverIndex) => {
     description,
     cover,
     created_at: dateFmt.format(date),
+    updated_at: formatUpdatedDate(data.updated, frontmatter),
     createdRaw: parseTime(date, '{y}-{m}-{d}'),
     labels: (data.tags || []).map((name, index) => ({ id: `${number}-${index}`, name })),
     milestone: data.category ? { title: data.category } : null,

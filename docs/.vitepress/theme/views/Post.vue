@@ -19,6 +19,10 @@
                 <i class="icon icon-calendar"></i>
                 {{ post.created_at }}
               </span>
+              <!-- 详情页只展示显式、有效的更新时间；不从文件修改时间推测，也不替换发布日期。 -->
+              <span v-if="post.updated_at" class="updated-date">
+                最后更新：<time :datetime="post.updated_at">{{ post.updated_at }}</time>
+              </span>
               <span>
                 <i class="icon icon-fire"></i>
                 热度{{ post.times || 1 }}℃
