@@ -7,10 +7,10 @@
           <div v-if="posts.length">
             <div class="clean">
               <span>Tag:</span>
-              <span class="clean-btn cursor" @click="reset">
+              <button type="button" class="clean-btn cursor" aria-label="清除标签筛选" @click="reset">
                 {{ label.name }}
                 <i class="icon icon-cancel-outline"></i>
-              </span>
+              </button>
             </div>
             <ArchiveCard
               :posts="posts"
@@ -23,9 +23,9 @@
           </div>
           <Loading v-else-if="label" />
           <ul v-else class="content">
-            <li v-for="item in tag" :key="item.id" @click="handleFilter(item)">
-              <!-- 标签列表展示时复用公共主题色，避免数据层遗留的浅紫色覆盖可读的文字颜色。 -->
-              <span class="cursor">{{ item.name }}</span>
+            <li v-for="item in tag" :key="item.id">
+              <!-- 标签列表直接用原生按钮调用既有筛选逻辑，键盘与鼠标共用 click，不另写按键事件。 -->
+              <button type="button" class="cursor" @click="handleFilter(item)">{{ item.name }}</button>
             </li>
           </ul>
         </Transition>

@@ -20,6 +20,10 @@
 #tag .content li {
   list-style: none;
 }
+/* 筛选和清除入口改用原生按钮后继承正文排版，保留原标签尺寸与文字风格。 */
+#tag button {
+  font: inherit;
+}
 @media screen and (min-width: 768px) {
   #tag .content li {
     margin: 10px 12px;
@@ -30,13 +34,13 @@
     margin: 10px 6px;
   }
 }
-#tag .content li span {
+#tag .content li button {
   padding: 4px 10px 6px;
   border-radius: 3px;
   background-color: var(--bg-dark);
   transition: background 0.3s ease-out;
 }
-#tag .content li span:hover {
+#tag .content li button:hover {
   background-color: var(--bg-dark-deep);
 }
 

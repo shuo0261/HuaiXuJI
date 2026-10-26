@@ -12,11 +12,14 @@
           >
             <RouterLink :to="{ name: 'post', params: { number: post.number, post } }">
               <div class="post-header">
+                <!-- 当前三种尺寸实测第二张卡片为 LCP：首两张直接加载，只提升第二张，后续封面交给浏览器懒加载。 -->
                 <Cover
                   :src="post.cover.src"
                   :cover-key="post.cover.key"
                   :fallback="post.cover.fallback"
                   :alt="post.cover.title"
+                  :loading="index < 2 ? 'eager' : 'lazy'"
+                  :fetchpriority="index === 1 ? 'high' : 'auto'"
                 />
                 <div class="post-head">
                   <h3>{{ post.title }}</h3>
@@ -126,7 +129,8 @@ async function queryPostsPage(type = 'next') {
 // 滚动到顶部
 function scrollTop() {
   if (typeof window === 'undefined') return
-  window.scrollTo({ top: 0, behavior: 'smooth' })
+  // 页面回顶阶段同时检查系统偏好，避免显式 smooth 绕过 CSS 的减少动画设置。
+  window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' })
 }
 
 // 看板娘

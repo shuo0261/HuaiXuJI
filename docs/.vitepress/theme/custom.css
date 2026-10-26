@@ -1629,13 +1629,13 @@ main.vp-page {
 #tag .content {
   justify-content: flex-start;
 }
-#tag .content li span {
+#tag .content li button {
   display: inline-block;
   border-radius: 20px;
   border: 1px solid var(--surface-border);
   color: var(--link-color);
 }
-#tag .content li span:hover {
+#tag .content li button:hover {
   background-color: rgba(113, 155, 133, 0.18);
 }
 #post article .post-body {
@@ -1674,6 +1674,16 @@ a:focus-visible,
 button:focus-visible {
   outline: 2px solid var(--link-color);
   outline-offset: 4px;
+}
+/* 系统要求减少动画时，主题展示层和 Vue 过渡立即完成；不干预 Live2D 的模型动画或任何业务状态。 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
 }
 @media (max-width: 767px) {
   #app .main {

@@ -35,7 +35,8 @@ onBeforeUnmount(() => {
 
 // 滚动到顶部
 const scrollTop = () => {
-  window.scrollTo({ top: 0, behavior: 'smooth' })
+  // 页面回顶阶段同时检查系统偏好，避免显式 smooth 绕过 CSS 的减少动画设置。
+  window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' })
 }
 
 // 监听页面滚动

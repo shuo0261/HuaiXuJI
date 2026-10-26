@@ -38,6 +38,23 @@
   box-shadow: var(--card-shadow-light);
   transition: var(--transition-base);
 }
+/* 卡片展示仍由 li 承担；透明按钮只负责筛选与键盘焦点，内缩轮廓避免被卡片裁切。 */
+#category .filter-option {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  background: transparent;
+}
+#category .filter-option:focus-visible {
+  outline: 2px solid var(--link-color);
+  outline-offset: -4px;
+}
+#category .clean-btn {
+  font: inherit;
+}
 @media screen and (min-width: 768px) {
   #category .content li:hover .avatar {
     animation-play-state: paused;

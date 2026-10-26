@@ -1,7 +1,7 @@
 <template>
   <div class="wrapper">
-    <img class="placeholder" :src="placeholderSrc" alt="封面占位" @error="placeholderFailed = true" />
-    <img ref="image" :class="['cover', loaded && 'ready']" :src="imgSrc" :alt="alt" loading="lazy" decoding="async" @load="loaded = true" @error="useFallback" />
+    <img class="placeholder" :src="placeholderSrc" :loading="loading" :fetchpriority="fetchpriority" alt="封面占位" @error="placeholderFailed = true" />
+    <img ref="image" :class="['cover', loaded && 'ready']" :src="imgSrc" :alt="alt" :loading="loading" :fetchpriority="fetchpriority" decoding="async" @load="loaded = true" @error="useFallback" />
   </div>
 </template>
 
@@ -9,7 +9,7 @@
 /**
  * Cover，移植自 aurora-master/src/components/Cover/index.vue
  * Vue2 Options API → Vue3 <script setup>，模板原样保留
- * 首页和文章详情共用：固定 16:9，原生懒加载；远程地址直接用于实际 img，不额外预取或跨域探测。
+ * 首页和文章详情共用：固定 16:9；调用方标记首屏及 LCP 图片，其余默认懒加载，不额外预取或跨域探测。
  */
 import { ref, computed, watch, onMounted, nextTick } from 'vue'
 import { withBase } from 'vitepress'
@@ -27,6 +27,8 @@ const props = defineProps({
   },
   coverKey: { type: String, default: '' },
   fallback: { type: String, default: '' },
+  loading: { type: String, default: 'lazy' },
+  fetchpriority: { type: String, default: 'auto' },
 })
 
 const image = ref(null)
@@ -37,7 +39,7 @@ const source = computed(() => withBase(fileCDN(resolveArticleCover(props.src, pr
 const localDefault = computed(() => withBase(props.fallback || coverFallback(props.coverKey)))
 // 显式封面本身也可能就是默认 SVG；失败时必须换一个地址，不能回退到同一张坏图。
 const fallbackCover = computed(() => localDefault.value === source.value ? withBase('/assets/apple-touch-icon.png') : localDefault.value)
-// 本地封面可直接作为 SSR 占位，水合时不闪换其他图；外链加载期间仍显示小体积本地图。
+// Cover 的 SSR 占位与实际图片共享 loading/优先级，既保留本地封面不闪换的效果，也不让占位绕过懒加载。
 const placeholderSrc = computed(() => placeholderFailed.value ? fallbackCover.value
   : source.value.startsWith('/') && !source.value.startsWith('//') ? source.value : localDefault.value)
 const imgSrc = computed(() => failed.value ? fallbackCover.value : source.value)

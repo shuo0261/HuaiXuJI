@@ -7,10 +7,10 @@
           <div v-if="posts.length">
             <div class="clean">
               <span>Category:</span>
-              <span class="clean-btn cursor" @click="reset">
+              <button type="button" class="clean-btn cursor" aria-label="清除分类筛选" @click="reset">
                 {{ milestone.title }}
                 <i class="icon icon-cancel-outline"></i>
-              </span>
+              </button>
             </div>
             <ArchiveCard
               :posts="posts"
@@ -23,7 +23,9 @@
           </div>
           <Loading v-else-if="milestone" />
           <ul v-else class="content">
-            <li class="cursor" v-for="item in category" :key="item.id" @click="handleFilter(item)">
+            <li class="cursor" v-for="item in category" :key="item.id">
+              <!-- 分类卡片的交互层复用原筛选入口：原生按钮支持 Tab/Enter/Space，底下展示层保持原有布局。 -->
+              <button type="button" class="filter-option cursor" :aria-label="`筛选分类：${item.title}（${item.open_issues} 篇）`" @click="handleFilter(item)"></button>
               <img class="bg" :src="item.cover" alt @error="handleCoverError" />
               <div class="meta">
                 <div>

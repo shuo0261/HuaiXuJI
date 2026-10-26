@@ -131,7 +131,8 @@ function handleResize() {
 function scrollTop() {
   // 延迟任务真正执行时再判断 hash，用户在这 500ms 内点击目录也不会被旧任务拉回页顶。
   if (typeof window === 'undefined' || window.location.hash) return
-  window.scrollTo({ top: 0, behavior: 'smooth' })
+  // 页面回顶阶段同时检查系统偏好，避免显式 smooth 绕过 CSS 的减少动画设置。
+  window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' })
 }
 
 </script>

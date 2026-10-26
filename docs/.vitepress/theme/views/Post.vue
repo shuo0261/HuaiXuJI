@@ -7,7 +7,8 @@
     <Transition name="fade-transform" mode="out-in">
       <article v-if="post">
         <div class="post-header">
-          <Cover :src="post.cover.src" :cover-key="post.cover.key" :fallback="post.cover.fallback" :alt="post.cover.title" maskHeight="0.8rem" />
+          <!-- 文章首屏封面是实测 LCP；SSR 即发起高优先级请求，保留 Cover 原有 16:9 占位。 -->
+          <Cover :src="post.cover.src" :cover-key="post.cover.key" :fallback="post.cover.fallback" :alt="post.cover.title" loading="eager" fetchpriority="high" maskHeight="0.8rem" />
           <div class="post-head">
             <div class="post-title">
               <h1>{{ post.title }}</h1>
