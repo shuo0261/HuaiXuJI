@@ -3,7 +3,7 @@ title: "槐序霁部署指南：IIS、Nginx 与 Docker"
 date: "2026-10-25"
 category: "部署教程"
 tags: ["VitePress", "IIS", "Nginx", "Docker", "部署教程"]
-cover: "/images/covers/cloud.svg"
+cover: "/images/covers/3.jpg"
 coverTitle: "部署手册"
 description: "从槐序霁的实际配置和静态产物出发，说明环境准备、个性化设置、IIS、Nginx、Docker 部署，以及 Cloudflare 缓存、HTTPS 和发布验收。"
 hot: 1

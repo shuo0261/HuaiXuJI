@@ -3,7 +3,7 @@ title: "槐序霁：一个简约的二次元个人博客"
 date: "2026-10-25"
 category: "项目文档"
 tags: ["槐序霁", "VitePress", "Vue3", "开源项目"]
-cover: "/images/covers/grove.svg"
+cover: "/images/covers/1.jpg"
 coverTitle: "项目介绍"
 description: "介绍槐序霁的设计来源、技术栈、现有功能与目录结构，并说明如何使用本地 Markdown 写作、调整主题和构建静态站点。"
 hot: 1

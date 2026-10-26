@@ -3,7 +3,7 @@ title: "Markdown 写作指南：从基础语法到 SEO 优化"
 date: "2026-10-25"
 category: "使用教程"
 tags: ["Markdown", "写作教程", "SEO", "槐序霁"]
-cover: "/images/covers/writing.svg"
+cover: "/images/covers/2.jpg"
 coverTitle: "写作教程"
 description: "依据槐序霁当前的 gray-matter 与 markdown-it 实现，讲解文章命名、Frontmatter、常用 Markdown、SEO 描述、预览发布和常见错误，并提供可复制模板。"
 hot: 1
