@@ -2,10 +2,10 @@
  * Aurora 主题配置文件（本地 Markdown 版）
  * 移植自 aurora-master/src/config.js，剥离 GitHub Issues / Gitalk / LeanCloud 配置
  */
-import site, { getSiteUrl } from '../site.js'
+import site, { getSiteUrl } from '../site.js';
 
 // 分类等既有封面调用统一使用本地默认图，不再通过随机接口获取站点基础图片。
-const defaultCover = '/images/covers/grove.svg'
+const defaultCover = '/images/covers/grove.svg';
 
 export default {
   /**
@@ -158,6 +158,16 @@ export default {
       avatar: '/assets/apple-touch-icon.png',
       cover: '/assets/apple-touch-icon.png',
     },
+    {
+      name: '他的日常时光',
+      link: 'https://www.17ci.com',
+      description: '国内备案网站，分享开发、生活等内容，偶尔更新。',
+      // Friend 复用本站已有图标作为头像和封面，不为单条友链增加头像 CDN。
+      avatar:
+        'https://www.17ci.com/wp-content/uploads/2023/12/1702602409-logoko.png',
+      cover:
+        'https://www.17ci.com/wp-content/uploads/2023/12/1702602409-logoko.png',
+    },
   ],
 
   /**
@@ -166,11 +176,13 @@ export default {
   about: [
     {
       title: '关于本站',
-      content: '本站基于 VitePress 构建，主题复刻自 Aurora，数据源为本地 Markdown。',
+      content:
+        '本站基于 VitePress 构建，主题复刻自 Aurora，数据源为本地 Markdown。',
     },
     {
       title: '个人寄语',
-      content: '劝君莫惜金缕衣，劝君惜取少年时。\n\n花开堪折直须折，莫待无花空折枝。',
+      content:
+        '劝君莫惜金缕衣，劝君惜取少年时。\n\n花开堪折直须折，莫待无花空折枝。',
     },
     {
       title: '个人信息',
@@ -181,7 +193,7 @@ export default {
       // About 的 Segment + MarkDown 直接展示用户提供的原文；保留五段、原字和段首空格，不改写或补出版信息。
       content: `作者：朱自清
 
-燕子去了，有再来的时候；杨柳枯了，有再青的时候；桃花谢了，有再开的时候。但是，聪明的，你告诉我，我们的日子为什么一去不复返呢？——是有人偷了他们罢：那是谁？又藏在何处呢？是他们自己逃走了罢：现在又到了哪里呢？
+　　燕子去了，有再来的时候；杨柳枯了，有再青的时候；桃花谢了，有再开的时候。但是，聪明的，你告诉我，我们的日子为什么一去不复返呢？——是有人偷了他们罢：那是谁？又藏在何处呢？是他们自己逃走了罢：现在又到了哪里呢？
 
 　　我不知道他们给了我多少日子；但我的手确乎是渐渐空虚了。在默默里算着，八千多日子已经从我手中溜去；像针尖上一滴水滴在大海里，我的日子滴在时间的流里，没有声音，也没有影子。我不禁头涔涔而泪潸潸了。
 
@@ -192,4 +204,4 @@ export default {
 　　你聪明的，告诉我，我们的日子为什么一去不复返呢？`,
     },
   ],
-}
+};

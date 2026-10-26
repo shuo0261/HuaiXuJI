@@ -2,7 +2,7 @@
 
 基于 [VitePress](https://vitepress.dev/) 复刻 [Aurora / 蝉时雨](https://github.com/chanshiyucx/aurora) 视觉风格的静态博客。组件从 Vue 2 Options API 改为 Vue 3 `<script setup>`，数据源由 GitHub Issues 迁移为本地 Markdown，无后端数据库；封面优先本地，部分装饰素材仍使用第三方资源。
 
-当前改版仓库：[shuo0261/HuaiXuJI](https://github.com/shuo0261/HuaiXuJI)。原作者仓库仍为 [chanshiyucx/aurora](https://github.com/chanshiyucx/aurora)。
+当前仓库：[shuo0261/HuaiXuJI](https://github.com/shuo0261/HuaiXuJI)。原作者仓库为 [chanshiyucx/aurora](https://github.com/chanshiyucx/aurora)。
 
 ![技术栈](https://img.shields.io/badge/VitePress-1.6-646cff) ![Vue](https://img.shields.io/badge/Vue-3.5-42b883) ![License](https://img.shields.io/badge/License-MIT-green)
 
@@ -90,7 +90,7 @@ title: 文章标题 # 必填
 date: 2026-01-10 # 必填，发布时间（显示与排序均基于此）
 category: 前端 # 可选，分类（分类页自动聚合）
 tags: [Vue, 笔记] # 可选，标签（标签页自动聚合）
-cover: "/images/covers/example.webp" # 可选，也支持完整 HTTPS 地址；先放入实际图片
+cover: '/images/covers/example.webp' # 可选，也支持完整 HTTPS 地址；先放入实际图片
 coverTitle: 封面副标 # 可选，标题条右侧的小字副标，不填则不显示
 description: 摘要文字 # 可选，列表卡片摘要，不填取正文首段
 hot: 99 # 可选，热度数值，默认 1
@@ -126,7 +126,7 @@ hot: 99 # 可选，热度数值，默认 1
 `cover` 优先级最高，支持本地路径和完整 HTTPS URL：
 
 ```yaml
-cover: "/images/covers/example.webp"
+cover: '/images/covers/example.webp'
 # 或者：cover: "https://img.example.com/covers/example.webp"
 ```
 
@@ -136,18 +136,18 @@ cover: "/images/covers/example.webp"
 
 ## 怎么修改 / 定制
 
-| 想改什么           | 改哪里                                                                                                                                                     |
-| ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 站点标题、副标题   | `.vitepress/site.js` → `title` / `subtitle`（主题与 SEO 共用）                                                                                           |
-| 主题色、配色板     | `theme/custom.css` 的 `:root` CSS 变量（`--purple-*` 等），已映射到 VitePress `--vp-*`                                                                     |
-| 背景图（刷新随机） | 授权图片放入 `docs/public/img/`；启动/构建时自动筛选 ≤3 MB 的 JPG/PNG/WebP/AVIF，完整打开时随机一张（详见目录 README.txt）                            |
-| 友链               | `theme/config.js` → `friends` 数组（name / link / avatar / cover）                                                                                         |
-| 关于页             | `theme/config.js` → `about`（分段落数组）、`aboutOpts`（头像、联系方式）                                                                                   |
-| 当前改版仓库       | `theme/config.js` → `rebuiltRepository`；留空不显示页脚仓库链接，原作者 Aurora 链接独立保留                                                               |
-| 分类摘要与封面     | `theme/config.js` → `categories`                                                                                                                           |
+| 想改什么           | 改哪里                                                                                                                                                             |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 站点标题、副标题   | `.vitepress/site.js` → `title` / `subtitle`（主题与 SEO 共用）                                                                                                     |
+| 主题色、配色板     | `theme/custom.css` 的 `:root` CSS 变量（`--purple-*` 等），已映射到 VitePress `--vp-*`                                                                             |
+| 背景图（刷新随机） | 授权图片放入 `docs/public/img/`；启动/构建时自动筛选 ≤3 MB 的 JPG/PNG/WebP/AVIF，完整打开时随机一张（详见目录 README.txt）                                         |
+| 友链               | `theme/config.js` → `friends` 数组（name / link / avatar / cover）                                                                                                 |
+| 关于页             | `theme/config.js` → `about`（分段落数组）、`aboutOpts`（头像、联系方式）                                                                                           |
+| 当前改版仓库       | `theme/config.js` → `rebuiltRepository`；留空不显示页脚仓库链接，原作者 Aurora 链接独立保留                                                                        |
+| 分类摘要与封面     | `theme/config.js` → `categories`                                                                                                                                   |
 | SEO                | `.vitepress/site.js` → `title` / `description` / `url`；正式 URL 留空时不生成地址，填写后构建自动统一 canonical、og:url、sitemap 和 robots；文章复用自身标题和摘要 |
-| 组件/页面          | `theme/components/`、`theme/views/`（Vue 3 `<script setup>`）                                                                                              |
-| 全局样式           | `theme/custom.css`（含移动端断点 767px 的响应式规则）                                                                                                      |
+| 组件/页面          | `theme/components/`、`theme/views/`（Vue 3 `<script setup>`）                                                                                                      |
+| 全局样式           | `theme/custom.css`（含移动端断点 767px 的响应式规则）                                                                                                              |
 
 > 注意：`docs/posts/*.md` 是数据文件，已在 `config.js` 中通过 `srcExclude` 排除，不会被构建成站点页面。
 
