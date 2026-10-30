@@ -1,11 +1,10 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import matter from 'gray-matter'
+import { readPostSources } from './post-source.js'
 import site, { getSiteUrl } from './site.js'
 import theme from './theme/config.js'
 
-const postsDirectory = fileURLToPath(new URL('../posts/', import.meta.url))
 const robotsFile = fileURLToPath(new URL('../public/robots.txt', import.meta.url))
 const managedProperties = new Set(['og:title', 'og:description', 'og:type', 'og:site_name', 'og:image', 'og:url'])
 
@@ -20,7 +19,7 @@ function absoluteCover(cover, siteUrl) {
 /** SSR/开发编译共同生成 head；title、description 交给 VitePress 原生输出，避免重复标签。 */
 export function createSeoHead({ title, description, pagePath, cover, type = 'website', head = [], siteUrl = getSiteUrl() }) {
   const result = head.filter(([tag, attrs = {}]) => tag !== 'title' &&
-    !(tag === 'meta' && (attrs.name === 'description' || managedProperties.has(attrs.property))) &&
+    !(tag === 'meta' && (attrs.name === 'description' || ['twitter:card', 'twitter:image'].includes(attrs.name) || managedProperties.has(attrs.property))) &&
     !(tag === 'link' && attrs.rel === 'canonical'))
   result.push(
     ['meta', { property: 'og:title', content: title }],
@@ -32,7 +31,8 @@ export function createSeoHead({ title, description, pagePath, cover, type = 'web
   const coverUrl = cover ? absoluteCover(cover, siteUrl) : ''
   const randomCover = coverUrl && new URL(coverUrl).hostname === 't.alcy.cc' && /^\/ysz\/?$/.test(new URL(coverUrl).pathname)
   const image = randomCover ? absoluteCover(theme.defaultShareImage, siteUrl) : coverUrl
-  if (image) result.push(['meta', { property: 'og:image', content: image }])
+  result.push(['meta', { name: 'twitter:card', content: image ? 'summary_large_image' : 'summary' }])
+  if (image) result.push(['meta', { property: 'og:image', content: image }], ['meta', { name: 'twitter:image', content: image }])
   if (siteUrl) {
     const url = new URL(pagePath, `${siteUrl}/`).href
     result.push(['link', { rel: 'canonical', href: url }], ['meta', { property: 'og:url', content: url }])
@@ -46,9 +46,7 @@ export function transformPageData(pageData) {
   const slug = pageData.params?.slug
   let article
   if (pageData.relativePath.startsWith('post/') && slug) {
-    const file = fs.readdirSync(postsDirectory).find(file => file.endsWith('.md') &&
-      file.replace(/\.md$/, '').replace(/^\d{4}-\d{2}-\d{2}-/, '') === slug)
-    if (file) article = matter(fs.readFileSync(path.join(postsDirectory, file), 'utf8'))
+    article = readPostSources().find(post => post.slug === slug)
   }
   const title = article ? String(article.data.title || '未命名文章') : pageData.title || site.title
   // 摘要回退与现有 posts.js 一致；作者填写 description 后，同时供列表和 SSR SEO 使用。
@@ -56,7 +54,7 @@ export function transformPageData(pageData) {
     .find(line => line.trim() && !line.trim().startsWith('<')) || '') : pageData.description || site.description
   const pagePath = pageData.relativePath === 'index.md' ? '/' : `/${pageData.relativePath.replace(/\.md$/, '.html')}`
   const head = createSeoHead({ title, description, pagePath,
-    cover: article ? String(article.data.cover || theme.defaultCover) : '',
+    cover: article ? `/og/${slug}.png` : '',
     type: article ? 'article' : 'website', head: pageData.frontmatter.head || [] })
   return { title, description, frontmatter: { ...pageData.frontmatter, title, description, head } }
 }

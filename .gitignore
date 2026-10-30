@@ -16,6 +16,8 @@ dist-ssr
 docs/.vitepress/cache/
 docs/.vitepress/.temp/
 .cache/
+# 分享图由 docs:build 重建，不提交重复 PNG；不删除 public 中未知图片。
+docs/public/og/*.png
 .vite/
 coverage/
 test-results/

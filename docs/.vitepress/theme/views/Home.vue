@@ -35,10 +35,6 @@
                   {{ post.created_at }}
                 </span>
                 <span>
-                  <i class="icon icon-fire"></i>
-                  热度{{ times[post.id] || 1 }}℃
-                </span>
-                <span>
                   <i class="icon icon-bookmark-empty"></i>
                   {{ post.milestone ? post.milestone.title : '未分类' }}
                 </span>
@@ -77,7 +73,7 @@ import Pagination from '../components/Pagination.vue'
 import Cover from '../components/Cover.vue'
 import RouterLink from '../components/RouterLink.vue'
 import { store, showTips, setTotalCount } from '../store'
-import { queryPosts, queryArchivesCount, queryHot } from '../posts'
+import { queryPosts, queryArchivesCount } from '../posts'
 import { isMobile } from '../utils'
 import './Home.css'
 
@@ -86,7 +82,6 @@ const page = ref(0)
 const pageSize = 10
 const posts = ref([])
 const list = ref([])
-const times = ref({})
 
 const totalCount = computed(() => store.totalCount)
 const maxPage = computed(() => Math.ceil(totalCount.value / pageSize))
@@ -120,10 +115,7 @@ async function queryPostsPage(type = 'next') {
   list.value[queryPage] = result
   scrollTop()
 
-  // 获取文章热度
-  const ids = result.map((o) => o.id)
-  const hot = queryHot(ids)
-  times.value = { ...times.value, ...hot }
+  // 首页只展示文章元数据；手工 hot 不再作为热度或浏览量输出。
 }
 
 // 滚动到顶部

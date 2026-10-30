@@ -20,6 +20,8 @@ export default {
   title: site.title,
   subtitle: site.subtitle,
   siteUrl: getSiteUrl(),
+  // Post 仅在开启时加载评论组件；server/site 是公开服务地址和站点名，不是数据库配置。
+  artalkConfig: { enable: false, server: '', site: '槐序霁' },
   // Footer 在页脚展示阶段读取改版仓库；留空时不生成链接，地址来自已确认的 origin，不替代原作者仓库。
   rebuiltRepository: 'https://github.com/shuo0261/HuaiXuJI',
   // Layout 使用 Footer 展示本站备案；两项独立开启，未取得真实号码和详情地址时保持关闭。

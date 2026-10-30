@@ -2,6 +2,10 @@ import { defineConfig } from 'vitepress'
 import { backgroundImagesPlugin } from './background-images.js'
 import site, { getSiteUrl } from './site.js'
 import { transformPageData, writeRobots } from './seo.js'
+import theme from './theme/config.js'
+import { validateArtalk } from './artalk-config.js'
+
+validateArtalk(theme.artalkConfig)
 
 const siteUrl = getSiteUrl()
 if (!siteUrl) console.warn('[SEO] 正式域名未配置：暂不生成 canonical、og:url、sitemap 及 robots 的 Sitemap 地址。')
